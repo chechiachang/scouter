@@ -1,6 +1,9 @@
 .PHONY: crawler
 crawler:
-	go build ./src/cmd/crawler && ./crawler
+	go build ./cmd/crawler && ./crawler
+
+test:
+	go test ./...
 
 apiserver:
-	go build ./src/cmd/apiserver
+	go build ./cmd/apiserver
