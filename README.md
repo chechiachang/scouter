@@ -1,6 +1,10 @@
 scouter
 ---
 
+
+[![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
+
+
 # TODOs
 
 - [] Github api crawler
