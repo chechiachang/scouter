@@ -1,8 +1,8 @@
 package scouter
 
 import (
-	"context"
-	"net/http"
+	//"context"
+	//"net/http"
 	"testing"
 )
 

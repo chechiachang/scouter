@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"github.com/chechiachang/scouter"
+	"log"
 )
 
 func main() {
-	fmt.Println("crawling...")
+	log.Println("crawling...")
 
 	users, err := scouter.FetchUsers("chechiachang")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-	fmt.Println(users)
+	log.Println(users)
 }

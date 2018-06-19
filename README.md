@@ -18,6 +18,7 @@ scouter
     - [] # of commits
 - [] Face Recognizer
   - [] Face detector
+    - [] Generate face landmarks
   - [] Face modle trainer
   - [] Face recognizer
 - [] Front-End
