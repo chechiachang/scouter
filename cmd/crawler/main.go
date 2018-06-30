@@ -20,4 +20,9 @@ func main() {
 		log.Println(err)
 	}
 	log.Println(*result.Total)
+
+	err = scouter.InsertUsers(result.Users)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
