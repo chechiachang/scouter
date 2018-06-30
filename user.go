@@ -3,6 +3,7 @@ package scouter
 import (
 	"context"
 	"log"
+	"net/http"
 
 	"github.com/google/go-github/github"
 )
@@ -40,8 +41,8 @@ func FetchUsers() ([]*github.User, error) {
 
 // https://developer.github.com/v3/search/#search-users
 // location:Taiwan&sort=joined&order=asc
-func SearchUsers() (*github.UsersSearchResult, error) {
-	client := github.NewClient(nil)
+func SearchUsers(tc *http.Client) (*github.UsersSearchResult, error) {
+	client := github.NewClient(tc)
 
 	opt := &github.SearchOptions{
 		Sort:      "joined",
