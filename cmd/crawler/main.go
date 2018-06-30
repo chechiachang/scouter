@@ -1,16 +1,23 @@
 package main
 
 import (
-	"github.com/chechiachang/scouter"
 	"log"
+
+	"github.com/chechiachang/scouter"
 )
 
 func main() {
 	log.Println("crawling...")
 
-	users, err := scouter.FetchUsers("chechiachang")
+	//users, err := scouter.FetchUsers()
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//log.Println(users)
+
+	result, err := scouter.SearchUsers()
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(users)
+	log.Println(*result.Total)
 }
