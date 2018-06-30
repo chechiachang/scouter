@@ -16,9 +16,13 @@ scouter
     - [v] avatar
     - [] # of follower
     - [] # of commits
+- [] Google Search API Face downloader
+  - [] Search Avatar with github username and login
+  - [] [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
 - [] Face Recognizer
   - [] Face detector
     - [] Generate face landmarks
+    - [] [Face recognition](https://github.com/ageitgey/face_recognition)
   - [] Face modle trainer
   - [] Face recognizer
 - [] Front-End
