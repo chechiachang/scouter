@@ -8,9 +8,12 @@ scouter
 # TODOs
 
 - [] Github api crawler
-  - [v] Add an api to fetch user list
-    - [v] order by most follower
-    - [v] order by most commit. Might need query by username.
+  - [] Add an api to search user in Taiwan 
+    - [v] Order by joined asc
+  - [v] Add an api to fetch user Data
+    - [] Get user with userUrl
+    - [] order by most follower
+    - [] order by most commit. Might need query by username.
   - [v] Save user data to mongodb
     - [v] username
     - [v] avatar
