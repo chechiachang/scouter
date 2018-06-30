@@ -79,7 +79,7 @@ func GetAvatar(result *github.UsersSearchResult) error {
 	workspace := filepath.Join(wd, "data/avatars")
 	if _, err := os.Stat(workspace); os.IsNotExist(err) {
 		log.Println(workspace + " not found. Mkdir one.")
-		if err = os.Mkdir(workspace, 0644); err != nil {
+		if err = os.MkdirAll(workspace, 0644); err != nil {
 			return err
 		}
 	}
@@ -87,7 +87,7 @@ func GetAvatar(result *github.UsersSearchResult) error {
 	for _, user := range result.Users {
 		dir := filepath.Join(workspace, strconv.FormatInt(*user.ID, 10))
 		log.Println(dir)
-		if err = os.Mkdir(dir, 0644); err != nil {
+		if err = os.MkdirAll(dir, 0644); err != nil {
 			return err
 		}
 
