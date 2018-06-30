@@ -33,9 +33,13 @@ func main() {
 
 	result, err := scouter.SearchUsers(tc)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 	log.Println(*result.Total)
+
+	if err := scouter.GetAvatar(result); err != nil {
+		log.Fatal(err)
+	}
 
 	err = scouter.InsertUsers(result.Users)
 	if err != nil {

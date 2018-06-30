@@ -40,7 +40,11 @@ func InsertUsers(users []github.User) error {
 	c := mongoSession.DB("").C(UserCollection)
 
 	for _, user := range users {
-		err := c.Insert(user)
+		u := User{
+			ID:   *user.ID,
+			User: &user,
+		}
+		err := c.Insert(u)
 		if err != nil {
 			return err
 		}
