@@ -8,12 +8,12 @@ scouter
 # TODOs
 
 - [] Github api crawler
-  - [] Add an api to fetch user list
-    - [] order by most follower
-    - [] order by most commit. Might need query by username.
-  - [] Save user data to mongodb
-    - [] username
-    - [] portrait
+  - [v] Add an api to fetch user list
+    - [v] order by most follower
+    - [v] order by most commit. Might need query by username.
+  - [v] Save user data to mongodb
+    - [v] username
+    - [v] avatar
     - [] # of follower
     - [] # of commits
 - [] Face Recognizer
@@ -24,6 +24,10 @@ scouter
 - [] Front-End
   - [] API portal
   - [] AR
+
+# How to use
+
+go build ./cmd/crawler/ && ./crawler --token github-api-token
 
 # Thanks
 

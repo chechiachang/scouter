@@ -31,18 +31,34 @@ func main() {
 	//}
 	//log.Println(users)
 
-	result, err := scouter.SearchUsers(tc)
+	query := "location:Taiwan"
+	sort := "joined"
+	order := "asc"
+	r, err := scouter.SearchUsers(tc, 1, query, "joined", "asc")
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(*result.Total)
+	log.Println(*r.Total)
 
-	if err := scouter.GetAvatar(result); err != nil {
-		log.Fatal(err)
-	}
+	pageNum := *r.Total / scouter.SearchMaxPerPage
 
-	err = scouter.InsertUsers(result.Users)
-	if err != nil {
-		log.Fatal(err)
+	for page := 1; page < pageNum+1; page++ {
+		result, err := scouter.SearchUsers(tc, page, query, sort, order)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if err := scouter.GetAvatar(result); err != nil {
+			log.Fatal(err)
+		}
+
+		err = scouter.InsertUsers(result.Users)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Github search API max rate is 30 queries/min for authorized user
+		// No need. The avatar downloading require more than 2 sec
+		// time.Sleep(2 * time.Second)
 	}
 }

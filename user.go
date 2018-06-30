@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/google/go-github/github"
 )
@@ -50,20 +51,19 @@ func FetchUsers() ([]*github.User, error) {
 
 // https://developer.github.com/v3/search/#search-users
 // location:Taiwan&sort=joined&order=asc
-func SearchUsers(tc *http.Client) (*github.UsersSearchResult, error) {
+func SearchUsers(tc *http.Client, page int, query, sort, order string) (*github.UsersSearchResult, error) {
 	client := github.NewClient(tc)
 
 	opt := &github.SearchOptions{
-		Sort:      "joined",
-		Order:     "asc",
+		Sort:      sort,
+		Order:     order,
 		TextMatch: false,
 		ListOptions: github.ListOptions{
-			Page:    0,
+			Page:    page,
 			PerPage: SearchMaxPerPage,
 		},
 	}
 
-	query := "location:Taiwan"
 	result, resp, err := client.Search.Users(context.Background(), query, opt)
 	log.Println(resp)
 
@@ -97,7 +97,8 @@ func GetAvatar(result *github.UsersSearchResult) error {
 		}
 		defer resp.Body.Close()
 
-		file, err := os.Create(filepath.Join(dir, "1.jpg"))
+		imagePath := filepath.Join(dir, strconv.Itoa(time.Now().Second())+".jpg")
+		file, err := os.Create(imagePath)
 		if err != nil {
 			return err
 		}
