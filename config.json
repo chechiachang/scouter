@@ -1,0 +1,19 @@
+{
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "public": {
+            "host": "localhost"
+        }
+    },
+    "mongo": {
+        "url": "mongodb://localhost:27017/scouter"
+    },
+    "logger": {
+        "dir": "./logs",
+        "level": "debug",
+        "maxAge": "720h",
+        "suffixPattern": ".%Y%m%d",
+        "linkName": "access_log"
+    }
+}
