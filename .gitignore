@@ -3,3 +3,4 @@ apiserver
 *.exe
 data/*
 
+logs/*
