@@ -1,15 +1,14 @@
 scouter
 ---
 
-
 [![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
-
 
 # TODOs
 
 - [] Github api crawler
-  - [] Add an api to search user in Taiwan 
+  - [v] Add an api to search user in Taiwan 
     - [v] Order by joined asc
+    - [ ] Implement a api call with narrowed search condition
   - [v] Add an api to fetch user Data
     - [] Get user with userUrl
     - [] order by most follower
@@ -41,3 +40,8 @@ go build ./cmd/crawler/ && ./crawler --token github-api-token
 ### Open source packages
 go-github
 
+### Issues
+
+```
+GET https://api.github.com/search/users?order=asc&page=11&per_page=1000&q=location%3ATaiwan&sort=joined: 422 Only the first 1000 search results are available []
+```
