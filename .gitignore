@@ -4,3 +4,5 @@ apiserver
 data/*
 
 logs/*
+
+__pycache__/
