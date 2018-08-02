@@ -33,7 +33,14 @@ scouter
 
 # How to use
 
+```
+pip3 install dlib
+pip3 install face_recognition
+```
+
+```
 go build ./cmd/crawler/ && ./crawler --token github-api-token
+```
 
 # Thanks
 
