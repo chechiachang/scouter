@@ -21,13 +21,12 @@ scouter
 - [] Google Search API Face downloader
   - [] Search Avatar with github username and login
   - [] [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
-- [] Face Recognizer
-  - [] Face detector
+- [v] Face Recognizer
+  - [v] Face detector
     - [] Generate face landmarks
-    - [] [Face recognition](https://github.com/ageitgey/face_recognition)
-  - [] Face modle trainer
-  - [] Face recognizer
+    - [v] [Face recognition](https://github.com/ageitgey/face_recognition)
 - [] Front-End
+  - [v] Unity ios app
   - [] API portal
   - [] AR
 

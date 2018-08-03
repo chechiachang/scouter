@@ -24,19 +24,14 @@ func GetAvatar(users []User) error {
 	}
 
 	for _, user := range users {
-		dir := filepath.Join(workspace, strconv.FormatInt(user.ID, 10))
-		log.Println(dir)
-		if err = os.MkdirAll(dir, 0755); err != nil {
-			return err
-		}
-
 		resp, err := http.Get(*user.AvatarURL)
 		if err != nil {
 			return err
 		}
 		defer resp.Body.Close()
 
-		imagePath := filepath.Join(dir, "avatar.jpg")
+		imagePath := filepath.Join(workspace, strconv.FormatInt(user.ID, 10)+".jpg")
+		log.Println("Downloading image: ", imagePath)
 		file, err := os.Create(imagePath)
 		if err != nil {
 			return err
