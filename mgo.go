@@ -23,31 +23,26 @@ func init() {
 	mongoSession = session
 }
 
-func FindUser() *github.User {
-	c := mongoSession.DB("").C(UserCollection)
-
-	result := new(github.User)
-
-	query := bson.M{}
-	err := c.Find(query).One(&result)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return result
+func CountCollectionRecords(collection string) (int, error) {
+	return mongoSession.DB("").C(collection).Count()
 }
 
-func InsertUsers(users []github.User) error {
-	c := mongoSession.DB("").C(UserCollection)
-
-	for _, user := range users {
-		u := User{
-			ID:   *user.ID,
-			User: &user,
-		}
-		err := c.Insert(u)
-		if err != nil {
-			return err
-		}
+func FindRecord(collection string, query bson.M) (github.User, error) {
+	var user github.User
+	if err := mongoSession.DB("").C(UserCollection).Find(query).One(&user); err != nil {
+		return user, err
 	}
-	return nil
+	return user, nil
+}
+
+func InsertRecord(collection string, record interface{}) error {
+	return mongoSession.DB("").C(collection).Insert(record)
+}
+
+func UpsertRecord(collection string, id interface{}, record interface{}) (*mgo.ChangeInfo, error) {
+	return mongoSession.DB("").C(collection).Upsert(id, record)
+}
+
+func FindUser(query bson.M) (github.User, error) {
+	return FindRecord(UserCollection, query)
 }

@@ -1,16 +1,8 @@
 package scouter
 
 import (
-	"context"
-	"log"
-	"net/http"
-
+	"github.com/globalsign/mgo/bson"
 	"github.com/google/go-github/github"
-)
-
-const (
-	UserMaxPerPage   = 100
-	SearchMaxPerPage = 1000
 )
 
 type User struct {
@@ -18,49 +10,48 @@ type User struct {
 	*github.User
 }
 
-func GetUser(username string) (*github.User, error) {
-	client := github.NewClient(nil)
-
-	user, resp, err := client.Users.Get(context.Background(), username)
-	log.Print(resp)
-
-	return user, err
+func CountUsers() (int, error) {
+	return CountCollectionRecords(UserCollection)
 }
 
-func FetchUsers() ([]*github.User, error) {
-	client := github.NewClient(nil)
+func FindUsers(selector bson.M, page, pageSize int) ([]User, error) {
+	var users []User
 
-	opt := &github.UserListOptions{
-
-		ListOptions: github.ListOptions{
-			Page:    0,
-			PerPage: UserMaxPerPage,
-		},
+	skip := (page - 1) * pageSize
+	if skip < 0 {
+		skip = 0
 	}
 
-	users, resp, err := client.Users.ListAll(context.Background(), opt)
-	log.Println(resp)
+	if err := mongoSession.DB("").C(UserCollection).Find(selector).Sort("-$natural").Skip(skip).Limit(pageSize).All(&users); err != nil {
+		return users, nil
+	}
 
-	return users, err
+	return users, nil
 }
 
-// https://developer.github.com/v3/search/#search-users
-// location:Taiwan&sort=joined&order=asc
-func SearchUsers(tc *http.Client, page int, query, sort, order string) (*github.UsersSearchResult, error) {
-	client := github.NewClient(tc)
-
-	opt := &github.SearchOptions{
-		Sort:      sort,
-		Order:     order,
-		TextMatch: false,
-		ListOptions: github.ListOptions{
-			Page:    page,
-			PerPage: SearchMaxPerPage,
-		},
+func InsertUsers(users []github.User) error {
+	for _, user := range users {
+		u := User{
+			ID:   *user.ID,
+			User: &user,
+		}
+		if err := InsertRecord(UserCollection, u); err != nil {
+			return err
+		}
 	}
+	return nil
+}
 
-	result, resp, err := client.Search.Users(context.Background(), query, opt)
-	log.Println(resp)
-
-	return result, err
+func UpsertUsers(users []github.User) error {
+	for _, user := range users {
+		u := User{
+			ID:   *user.ID,
+			User: &user,
+		}
+		_, err := UpsertRecord(UserCollection, u.ID, u)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

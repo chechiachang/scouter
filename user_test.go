@@ -16,7 +16,7 @@ func TestCrawler_FetchUser(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	_, err := GetUser("chechiachang")
+	_, err := GetGithubUser("chechiachang")
 	if err != nil {
 		t.Errorf("GetUsers returned error: %v", err)
 	}
