@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/chechiachang/scouter/serviceprovider"
+	"github.com/chechiachang/scouter"
 	"github.com/emicklei/go-restful"
 	"github.com/gorilla/mux"
 )
@@ -20,7 +20,7 @@ func (a *Apiserver) AppRoute() *mux.Router {
 	return router
 }
 
-func newVersionService(sp *serviceprovider.Container) *restful.WebService {
+func newVersionService(sp *scouter.Container) *restful.WebService {
 	webService := new(restful.WebService)
 	webService.Path("/v1/version").Consumes(restful.MIME_JSON, restful.MIME_JSON).Produces(restful.MIME_JSON, restful.MIME_JSON)
 	//  webService.Filter(validateTokenMiddleware)
@@ -31,8 +31,8 @@ func newVersionService(sp *serviceprovider.Container) *restful.WebService {
 // RESTfulContextHandler is the interface for restfuul handler(restful.Request,restful.Response)
 type RESTfulContextHandler func(*Context)
 
-// RESTfulServiceHandler is the wrapper to combine the RESTfulContextHandler with our serviceprovider object
-func RESTfulServiceHandler(sp *serviceprovider.Container, handler RESTfulContextHandler) restful.RouteFunction {
+// RESTfulServiceHandler is the wrapper to combine the RESTfulContextHandler with our scouter object
+func RESTfulServiceHandler(sp *scouter.Container, handler RESTfulContextHandler) restful.RouteFunction {
 	return func(req *restful.Request, resp *restful.Response) {
 		ctx := Context{
 			ServiceProvider: sp,

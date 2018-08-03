@@ -1,4 +1,4 @@
-package serviceprovider
+package scouter
 
 import (
 	"encoding/json"

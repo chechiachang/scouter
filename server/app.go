@@ -5,14 +5,14 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/chechiachang/scouter/serviceprovider"
+	"github.com/chechiachang/scouter"
 	"github.com/linkernetworks/logger"
 )
 
 // App is the structure to set config & service provider of APP
 type Apiserver struct {
-	Config          serviceprovider.Config
-	ServiceProvider *serviceprovider.Container
+	Config          scouter.Config
+	ServiceProvider *scouter.Container
 }
 
 // LoadConfig consumes a string of path to the json config file and read config file into Config.
@@ -21,7 +21,7 @@ func (a *Apiserver) LoadConfig(configPath string) *Apiserver {
 		log.Fatal("-config option is required.")
 	}
 
-	a.Config = serviceprovider.MustRead(configPath)
+	a.Config = scouter.MustRead(configPath)
 	return a
 }
 
@@ -39,5 +39,5 @@ func (a *Apiserver) Start(host, port string) error {
 func (a *Apiserver) InitilizeService() {
 	logger.Setup(a.Config.Logger)
 
-	a.ServiceProvider = serviceprovider.New(a.Config)
+	a.ServiceProvider = scouter.New(a.Config)
 }

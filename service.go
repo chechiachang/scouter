@@ -1,4 +1,4 @@
-package serviceprovider
+package scouter
 
 import (
 	"github.com/linkernetworks/logger"
