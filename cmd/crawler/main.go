@@ -14,7 +14,7 @@ func main() {
 	flag.Parse()
 
 	if *githubApiToken == "" {
-		panic("Token is empty.")
+		panic("Github api token is empty.")
 	}
 
 	ctx := context.Background()
@@ -25,25 +25,19 @@ func main() {
 
 	log.Println("crawling...")
 
-	//users, err := scouter.FetchUsers()
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//log.Println(users)
-
 	query := "location:Taiwan"
 	sort := "joined"
 	order := "asc"
-	r, err := scouter.SearchUsers(tc, 1, query, "joined", "asc")
+	r, err := scouter.SearchGithubUsers(tc, 1, query, "joined", "asc")
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(*r.Total)
+	log.Println("Found records:", *r.Total)
 
 	pageNum := *r.Total / scouter.SearchMaxPerPage
 
 	for page := 1; page < pageNum+1; page++ {
-		result, err := scouter.SearchUsers(tc, page, query, sort, order)
+		result, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -52,8 +46,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		err = scouter.InsertUsers(result.Users)
-		if err != nil {
+		if err := scouter.UpsertUsers(result.Users); err != nil {
 			log.Fatal(err)
 		}
 
