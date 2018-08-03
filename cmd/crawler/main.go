@@ -50,7 +50,6 @@ func main() {
 
 		// First fetch
 		r, err := scouter.SearchGithubUsers(tc, 1, query, sort, order)
-		time.Sleep(2 * time.Second) // Github search API max rate is 30 queries/min for authorized user
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,12 +67,13 @@ func main() {
 					log.Fatal(err)
 				}
 
-				if err := scouter.UpsertUsers(pagedResult.Users); err != nil {
+				if err := scouter.UpsertGithubUsers(tc, pagedResult.Users); err != nil {
 					log.Fatal(err)
 				}
+
 			}
 		} else {
-			if err := scouter.UpsertUsers(r.Users); err != nil {
+			if err := scouter.UpsertGithubUsers(tc, r.Users); err != nil {
 				log.Fatal(err)
 			}
 		}

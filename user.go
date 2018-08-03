@@ -42,16 +42,14 @@ func InsertUsers(users []github.User) error {
 	return nil
 }
 
-func UpsertUsers(users []github.User) error {
-	for _, user := range users {
-		u := User{
-			ID:   *user.ID,
-			User: &user,
-		}
-		_, err := UpsertRecord(UserCollection, bson.M{"_id": u.ID}, u)
-		if err != nil {
-			return err
-		}
+func UpsertUser(user github.User) error {
+	u := User{
+		ID:   *user.ID,
+		User: &user,
+	}
+	_, err := UpsertRecord(UserCollection, bson.M{"_id": u.ID}, u)
+	if err != nil {
+		return err
 	}
 	return nil
 }

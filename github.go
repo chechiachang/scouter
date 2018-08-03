@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/go-github/github"
 )
@@ -13,17 +14,18 @@ const (
 	SearchMaxPerPage = 1000
 )
 
-func GetGithubUser(username string) (*github.User, error) {
-	client := github.NewClient(nil)
+func GetGithubUser(tc *http.Client, username string) (*github.User, error) {
+	client := github.NewClient(tc)
 
 	user, resp, err := client.Users.Get(context.Background(), username)
+	time.Sleep(750 * time.Microsecond) // Github search API max rate
 	log.Print(resp)
 
 	return user, err
 }
 
-func FetchGithubUsers() ([]*github.User, error) {
-	client := github.NewClient(nil)
+func FetchGithubUsers(tc *http.Client) ([]*github.User, error) {
+	client := github.NewClient(tc)
 
 	opt := &github.UserListOptions{
 
@@ -57,5 +59,21 @@ func SearchGithubUsers(tc *http.Client, page int, query, sort, order string) (*g
 	result, resp, err := client.Search.Users(context.Background(), query, opt)
 	log.Println(resp)
 
+	time.Sleep(2 * time.Second) // Github search API max rate
+
 	return result, err
+}
+
+func UpsertGithubUsers(tc *http.Client, users []github.User) error {
+	for _, user := range users {
+		detailUser, err := GetGithubUser(tc, *user.Login)
+		if err != nil {
+			return err
+		}
+
+		if err := UpsertUser(*detailUser); err != nil {
+			return err
+		}
+	}
+	return nil
 }
