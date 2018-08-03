@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"log"
+	"sync"
+	"time"
 
 	"github.com/chechiachang/scouter"
 	"golang.org/x/oauth2"
@@ -25,29 +27,52 @@ func main() {
 
 	log.Println("crawling...")
 
-	query := "location:Taiwan"
+	layout := "2006-01-01"
+	// set fetching start and end time range
+	startTime, err := time.Parse(layout, "2008-01-01")
+	if err != nil {
+		panic(err)
+	}
+	endTime := time.Now()
+
+	// set fetch batch time interval
+	startCursor := startTime
+	endCursor := startTime.AddDate(0, 1, 0) // interval: 1 month
+
 	sort := "joined"
 	order := "asc"
-	r, err := scouter.SearchGithubUsers(tc, 1, query, "joined", "asc")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Found records:", *r.Total)
 
-	pageNum := *r.Total / scouter.SearchMaxPerPage
+	for endCursor.Before(endTime) {
+		wg := sync.WaitGroup{}
+		defer wg.Done()
 
-	for page := 1; page < pageNum+1; page++ {
-		result, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
+		query := "location:Taiwan created:" + startCursor.Format(layout) + ".." + endCursor.Format(layout)
+
+		r, err := scouter.SearchGithubUsers(tc, 1, query, sort, order)
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Println("Fetching ", query, ". Found records:", *r.Total)
 
-		if err := scouter.UpsertUsers(result.Users); err != nil {
-			log.Fatal(err)
-		}
+		// paging if result > searchMaxPerPage
+		//pageNum := *r.Total / scouter.SearchMaxPerPage
+
+		//for page := 1; page < pageNum+1; page++ {
+		//	result, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
+		//	if err != nil {
+		//		log.Fatal(err)
+		//	}
+
+		//	if err := scouter.UpsertUsers(result.Users); err != nil {
+		//		log.Fatal(err)
+		//	}
+		//}
+		// Move forward 1 month
+		startCursor = startCursor.AddDate(0, 1, 0)
+		endCursor = endCursor.AddDate(0, 1, 0)
 
 		// Github search API max rate is 30 queries/min for authorized user
-		// No need. The avatar downloading require more than 2 sec
-		// time.Sleep(2 * time.Second)
+		time.Sleep(2 * time.Second)
+		wg.Wait()
 	}
 }
