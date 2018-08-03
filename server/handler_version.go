@@ -8,9 +8,3 @@ func versionHandler(ctx *Context) {
 		Message: "v0.0.1",
 	})
 }
-
-// ActionResponse is the structure for Response action
-type ActionResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-}
