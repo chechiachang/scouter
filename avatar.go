@@ -7,11 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-
-	"github.com/google/go-github/github"
 )
 
-func GetAvatar(result *github.UsersSearchResult) error {
+func GetAvatar(users []User) error {
 	wd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -25,8 +23,8 @@ func GetAvatar(result *github.UsersSearchResult) error {
 		}
 	}
 
-	for _, user := range result.Users {
-		dir := filepath.Join(workspace, strconv.FormatInt(*user.ID, 10))
+	for _, user := range users {
+		dir := filepath.Join(workspace, strconv.FormatInt(user.ID, 10))
 		log.Println(dir)
 		if err = os.MkdirAll(dir, 0755); err != nil {
 			return err

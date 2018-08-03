@@ -42,10 +42,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if err := scouter.GetAvatar(result); err != nil {
-			log.Fatal(err)
-		}
-
 		if err := scouter.UpsertUsers(result.Users); err != nil {
 			log.Fatal(err)
 		}

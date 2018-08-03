@@ -1,5 +1,7 @@
 crawler
 apiserver
+avatar_downloader
+
 *.exe
 data/*
 
