@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 
@@ -28,12 +29,22 @@ func main() {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
+	if err := searchUsers(tc); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := updateUsersDetail(tc); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func searchUsers(tc *http.Client) error {
 	layout := "2006-01-01"
 	// set fetching with time range from start time to now
 	endTime := time.Now()
 	startTime, err := time.Parse(layout, "2008-01-01")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// set fetch batch time interval
@@ -42,16 +53,18 @@ func main() {
 	sort := "joined"
 	order := "asc"
 
+	wg := sync.WaitGroup{}
+	defer wg.Done()
+
 	for endCursor.Before(endTime) {
-		wg := sync.WaitGroup{}
-		defer wg.Done()
 
 		query := "location:Taiwan created:" + startCursor.Format(layout) + ".." + endCursor.Format(layout)
 
 		// First fetch
 		r, err := scouter.SearchGithubUsers(tc, 1, query, sort, order)
+		time.Sleep(2 * time.Second) // Github search API max rate
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		log.Println("Fetching ", query, ". Found records:", *r.Total)
 
@@ -61,20 +74,22 @@ func main() {
 			pageNum := *r.Total / scouter.SearchMaxPerPage
 
 			for page := 1; page < pageNum+1; page++ {
+
 				pagedResult, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
-				time.Sleep(2 * time.Second)
+				time.Sleep(2 * time.Second) // Github search API max rate
 				if err != nil {
-					log.Fatal(err)
+					return err
 				}
 
-				if err := scouter.UpsertGithubUsers(tc, pagedResult.Users); err != nil {
-					log.Fatal(err)
+				if err := scouter.UpsertUsers(pagedResult.Users); err != nil {
+					return err
 				}
 
 			}
+
 		} else {
-			if err := scouter.UpsertGithubUsers(tc, r.Users); err != nil {
-				log.Fatal(err)
+			if err := scouter.UpsertUsers(r.Users); err != nil {
+				return err
 			}
 		}
 
@@ -82,6 +97,12 @@ func main() {
 		startCursor = endCursor.AddDate(0, 0, 1)
 		endCursor = startCursor.AddDate(0, 1, 0) // interval: 1 month
 
-		wg.Wait()
+		//	time.Sleep(time.Duration(*r.Total*750) * time.Microsecond) // Github search API max rate per query
 	}
+	wg.Wait()
+	return nil
+}
+
+func updateUsersDetail(tc *http.Client) error {
+	return nil
 }

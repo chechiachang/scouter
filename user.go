@@ -14,6 +14,14 @@ func CountUsers() (int, error) {
 	return CountCollectionRecords(UserCollection)
 }
 
+func FindUser(query bson.M) (User, error) {
+	var user User
+	if err := mongoSession.DB("").C(UserCollection).Find(query).One(&user); err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 func FindUsers(selector bson.M, page, pageSize int) ([]User, error) {
 	var users []User
 
@@ -42,6 +50,10 @@ func InsertUsers(users []github.User) error {
 	return nil
 }
 
+func UpdateUserById(id interface{}, update interface{}) error {
+	return UpdateById(UserCollection, id, update)
+}
+
 func UpsertUser(user github.User) error {
 	u := User{
 		ID:   *user.ID,
@@ -50,6 +62,15 @@ func UpsertUser(user github.User) error {
 	_, err := UpsertRecord(UserCollection, bson.M{"_id": u.ID}, u)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func UpsertUsers(users []github.User) error {
+	for _, user := range users {
+		if err := UpsertUser(user); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/google/go-github/github"
 )
@@ -18,7 +17,6 @@ func GetGithubUser(tc *http.Client, username string) (*github.User, error) {
 	client := github.NewClient(tc)
 
 	user, resp, err := client.Users.Get(context.Background(), username)
-	time.Sleep(750 * time.Microsecond) // Github search API max rate
 	log.Print(resp)
 
 	return user, err
@@ -58,8 +56,6 @@ func SearchGithubUsers(tc *http.Client, page int, query, sort, order string) (*g
 
 	result, resp, err := client.Search.Users(context.Background(), query, opt)
 	log.Println(resp)
-
-	time.Sleep(2 * time.Second) // Github search API max rate
 
 	return result, err
 }

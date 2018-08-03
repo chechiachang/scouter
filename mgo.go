@@ -4,8 +4,6 @@ import (
 	"log"
 
 	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
-	"github.com/google/go-github/github"
 )
 
 const (
@@ -27,14 +25,6 @@ func CountCollectionRecords(collection string) (int, error) {
 	return mongoSession.DB("").C(collection).Count()
 }
 
-func FindRecord(collection string, query bson.M) (github.User, error) {
-	var user github.User
-	if err := mongoSession.DB("").C(UserCollection).Find(query).One(&user); err != nil {
-		return user, err
-	}
-	return user, nil
-}
-
 func InsertRecord(collection string, record interface{}) error {
 	return mongoSession.DB("").C(collection).Insert(record)
 }
@@ -43,6 +33,6 @@ func UpsertRecord(collection string, id interface{}, record interface{}) (*mgo.C
 	return mongoSession.DB("").C(collection).Upsert(id, record)
 }
 
-func FindUser(query bson.M) (github.User, error) {
-	return FindRecord(UserCollection, query)
+func UpdateById(collection string, id interface{}, update interface{}) error {
+	return mongoSession.DB("").C(collection).UpdateId(id, update)
 }
