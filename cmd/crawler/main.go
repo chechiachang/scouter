@@ -49,30 +49,38 @@ func main() {
 		query := "location:Taiwan created:" + startCursor.Format(layout) + ".." + endCursor.Format(layout)
 
 		r, err := scouter.SearchGithubUsers(tc, 1, query, sort, order)
+		time.Sleep(2 * time.Second) // Github search API max rate is 30 queries/min for authorized user
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Println("Fetching ", query, ". Found records:", *r.Total)
 
-		// paging if result > searchMaxPerPage
-		//pageNum := *r.Total / scouter.SearchMaxPerPage
+		// paging if result.Total > searchMaxPerPage
+		if !(*r.Total > scouter.SearchMaxPerPage) {
 
-		//for page := 1; page < pageNum+1; page++ {
-		//	result, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
-		//	if err != nil {
-		//		log.Fatal(err)
-		//	}
+			pageNum := *r.Total / scouter.SearchMaxPerPage
 
-		//	if err := scouter.UpsertUsers(result.Users); err != nil {
-		//		log.Fatal(err)
-		//	}
-		//}
+			for page := 1; page < pageNum+1; page++ {
+				pagedResult, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
+				time.Sleep(2 * time.Second)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				if err := scouter.UpsertUsers(pagedResult.Users); err != nil {
+					log.Fatal(err)
+				}
+			}
+		} else {
+			if err := scouter.UpsertUsers(r.Users); err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		// Move forward 1 month
 		startCursor = startCursor.AddDate(0, 1, 0)
 		endCursor = endCursor.AddDate(0, 1, 0)
 
-		// Github search API max rate is 30 queries/min for authorized user
-		time.Sleep(2 * time.Second)
 		wg.Wait()
 	}
 }
