@@ -1,6 +1,6 @@
 .PHONY: crawler
 crawler:
-	go build ./cmd/crawler && ./crawler
+	go build ./cmd/crawler
 
 .PHONY: test
 test:
