@@ -48,7 +48,7 @@ func UpsertUsers(users []github.User) error {
 			ID:   *user.ID,
 			User: &user,
 		}
-		_, err := UpsertRecord(UserCollection, u.ID, u)
+		_, err := UpsertRecord(UserCollection, bson.M{"_id": u.ID}, u)
 		if err != nil {
 			return err
 		}

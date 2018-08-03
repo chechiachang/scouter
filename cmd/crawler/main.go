@@ -19,26 +19,26 @@ func main() {
 		panic("Github api token is empty.")
 	}
 
+	log.Println("crawling...")
+
+	// Prepare github client
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: *githubApiToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
-	log.Println("crawling...")
-
 	layout := "2006-01-01"
-	// set fetching start and end time range
+	// set fetching with time range from start time to now
+	endTime := time.Now()
 	startTime, err := time.Parse(layout, "2008-01-01")
 	if err != nil {
 		panic(err)
 	}
-	endTime := time.Now()
 
 	// set fetch batch time interval
 	startCursor := startTime
-	endCursor := startTime.AddDate(0, 1, 0) // interval: 1 month
-
+	endCursor := startCursor.AddDate(0, 1, 0) // interval: 1 month
 	sort := "joined"
 	order := "asc"
 
@@ -48,6 +48,7 @@ func main() {
 
 		query := "location:Taiwan created:" + startCursor.Format(layout) + ".." + endCursor.Format(layout)
 
+		// First fetch
 		r, err := scouter.SearchGithubUsers(tc, 1, query, sort, order)
 		time.Sleep(2 * time.Second) // Github search API max rate is 30 queries/min for authorized user
 		if err != nil {
@@ -55,8 +56,8 @@ func main() {
 		}
 		log.Println("Fetching ", query, ". Found records:", *r.Total)
 
-		// paging if result.Total > searchMaxPerPage
-		if !(*r.Total > scouter.SearchMaxPerPage) {
+		// paging fetch if result.Total > searchMaxPerPage
+		if *r.Total > scouter.SearchMaxPerPage {
 
 			pageNum := *r.Total / scouter.SearchMaxPerPage
 
@@ -77,9 +78,9 @@ func main() {
 			}
 		}
 
-		// Move forward 1 month
-		startCursor = startCursor.AddDate(0, 1, 0)
-		endCursor = endCursor.AddDate(0, 1, 0)
+		// Move cursor forward 1 month
+		startCursor = endCursor.AddDate(0, 0, 1)
+		endCursor = startCursor.AddDate(0, 1, 0) // interval: 1 month
 
 		wg.Wait()
 	}
