@@ -1,6 +1,8 @@
-crawler
-apiserver
-avatar_downloader
+*/user_fetcher
+*/user_detail_fetcher
+*/contribution_fetcher
+*apiserver
+*/avatar_downloader
 
 *.exe
 data/*
