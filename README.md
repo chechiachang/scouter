@@ -5,19 +5,19 @@ scouter
 
 # TODOs
 
-- [] Github api crawler
+- [v] Github api crawler
   - [v] Add an api to search user in Taiwan 
     - [v] Order by joined asc
-    - [ ] Implement a api call with narrowed search condition
+    - [v] Implement a api call with narrowed search condition
   - [v] Add an api to fetch user Data
-    - [] Get user with userUrl
-    - [] order by most follower
-    - [] order by most commit. Might need query by username.
+    - [v] Get user with userUrl
+    - [v] order by most follower
+    - [v] order by most commit. Might need query by username.
   - [v] Save user data to mongodb
     - [v] username
     - [v] avatar
-    - [] # of follower
-    - [] # of commits
+    - [v] # of follower
+    - [v] # of contributions
 - [] Google Search API Face downloader
   - [] Search Avatar with github username and login
   - [] [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
@@ -39,6 +39,14 @@ pip3 install face_recognition
 
 ```
 go build ./cmd/crawler/ && ./crawler --token github-api-token
+```
+
+### Face detection
+
+[Face Detection](https://github.com/ageitgey/face_recognition)
+
+```
+face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
 ```
 
 # Thanks
