@@ -94,7 +94,8 @@ func searchUsers(tc *http.Client) error {
 
 			for _, user := range r.Users {
 				u := scouter.User{
-					User: user,
+					ID:   user.GetID(),
+					User: &user,
 				}
 				if err := scouter.UpsertUser(u); err != nil {
 					return err
@@ -140,7 +141,7 @@ func updateUsersDetail(tc *http.Client) error {
 
 			u := scouter.User{
 				ID:   detailedUser.GetID(),
-				User: *detailedUser,
+				User: detailedUser,
 			}
 
 			if err := scouter.UpsertUser(u); err != nil {

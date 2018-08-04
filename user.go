@@ -7,7 +7,7 @@ import (
 
 type User struct {
 	ID int64 `bson:"_id" json:"id"`
-	github.User
+	*github.User
 	Contribution int `bson:"contribution" json:"contribution"`
 }
 
@@ -38,13 +38,9 @@ func FindUsers(selector bson.M, page, pageSize int) ([]User, error) {
 	return users, nil
 }
 
-func InsertUsers(users []github.User) error {
+func InsertUsers(users []User) error {
 	for _, user := range users {
-		u := User{
-			ID:   *user.ID,
-			User: user,
-		}
-		if err := InsertRecord(UserCollection, u); err != nil {
+		if err := InsertRecord(UserCollection, user); err != nil {
 			return err
 		}
 	}

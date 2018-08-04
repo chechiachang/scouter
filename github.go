@@ -79,7 +79,7 @@ func UpsertGithubUsers(tc *http.Client, users []github.User) error {
 		}
 		u := User{
 			ID:   detailUser.GetID(),
-			User: *detailUser,
+			User: detailUser,
 		}
 		if err := UpsertUser(u); err != nil {
 			return err
