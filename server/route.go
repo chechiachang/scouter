@@ -16,6 +16,7 @@ func (a *Apiserver) AppRoute() *mux.Router {
 	container.Filter(globalLogging)
 
 	container.Add(newVersionService(a.ServiceProvider))
+	container.Add(newRecognitionService(a.ServiceProvider))
 
 	router.PathPrefix("/v1/").Handler(container)
 	return router
@@ -24,14 +25,6 @@ func (a *Apiserver) AppRoute() *mux.Router {
 func globalLogging(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
 	logger.Infof("%s %s", req.Request.Method, req.Request.URL)
 	chain.ProcessFilter(req, resp)
-}
-
-func newVersionService(sp *scouter.Container) *restful.WebService {
-	webService := new(restful.WebService)
-	webService.Path("/v1/version").Consumes(restful.MIME_JSON, restful.MIME_JSON).Produces(restful.MIME_JSON, restful.MIME_JSON)
-	//  webService.Filter(validateTokenMiddleware)
-	webService.Route(webService.GET("/").To(RESTfulServiceHandler(sp, versionHandler)))
-	return webService
 }
 
 // RESTfulContextHandler is the interface for restfuul handler(restful.Request,restful.Response)
@@ -47,4 +40,22 @@ func RESTfulServiceHandler(sp *scouter.Container, handler RESTfulContextHandler)
 		}
 		handler(&ctx)
 	}
+}
+
+// route services
+
+func newVersionService(sp *scouter.Container) *restful.WebService {
+	webService := new(restful.WebService)
+	webService.Path("/v1/version").Consumes(restful.MIME_JSON, restful.MIME_JSON).Produces(restful.MIME_JSON, restful.MIME_JSON)
+	//  webService.Filter(validateTokenMiddleware)
+	webService.Route(webService.GET("/").To(RESTfulServiceHandler(sp, versionHandler)))
+	return webService
+}
+
+func newRecognitionService(sp *scouter.Container) *restful.WebService {
+	webService := new(restful.WebService)
+	webService.Path("/v1/recognition").Consumes(restful.MIME_JSON, restful.MIME_JSON).Produces(restful.MIME_JSON, restful.MIME_JSON)
+	//  webService.Filter(validateTokenMiddleware)
+	webService.Route(webService.GET("/").To(RESTfulServiceHandler(sp, recognitionHandler)))
+	return webService
 }
