@@ -38,7 +38,12 @@ func countContribution() error {
 	pageSize := scouter.SearchMaxPerPage
 	pageNum := total / pageSize
 
-	r, err := regexp.Compile(".[0-9]* contributions")
+	// Use regex to get contribution number
+	contributionLine, err := regexp.Compile(".[0-9,]* contribution")
+	if err != nil {
+		return err
+	}
+	contributionNumber, err := regexp.Compile(".[0-9,]*")
 	if err != nil {
 		return err
 	}
@@ -73,10 +78,9 @@ func countContribution() error {
 				// Get contiribution number from h2 content
 				doc.Find(".js-contribution-graph .text-normal").Each(func(i int, s *goquery.Selection) {
 					content := s.Text()
-					str := r.FindString(content)                        // 1.353 contributions
-					str = strings.Replace(str, ",", "", -1)             // 1,353 contributions
-					str = strings.Replace(str, "contributions", "", -1) // 1353
-					str = strings.Replace(str, " ", "", -1)             // 1353
+					str := contributionLine.FindString(content) // 1,353 contributions or 1 contribution.
+					str = strings.Replace(str, " ", "", -1)     // 1,353 or 1. Remove comma.
+					str = contributionNumber.FindString(str)    // 1353 or 1.
 
 					if str != "" {
 						c, err := strconv.Atoi(str) // 0
