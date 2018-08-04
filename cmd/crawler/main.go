@@ -5,10 +5,11 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"sync"
+	"runtime"
 	"time"
 
 	"github.com/chechiachang/scouter"
+	"github.com/globalsign/mgo/bson"
 	"golang.org/x/oauth2"
 )
 
@@ -20,7 +21,7 @@ func main() {
 		panic("Github api token is empty.")
 	}
 
-	log.Println("crawling...")
+	log.Println("Starting crawler...")
 
 	// Prepare github client
 	ctx := context.Background()
@@ -33,19 +34,27 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := updateUsersDetail(tc); err != nil {
-		log.Fatal(err)
-	}
+	//if err := updateUsersDetail(tc); err != nil {
+	//	log.Fatal(err)
+	//}
 }
 
 func searchUsers(tc *http.Client) error {
-	layout := "2006-01-01"
+	log.Println("Starting fetch github user with search api...")
+
+	layout := "2006-01-01T00:00:00"
 	// set fetching with time range from start time to now
 	endTime := time.Now()
-	startTime, err := time.Parse(layout, "2008-01-01")
+	startTime, err := time.Parse(layout, "2008-01-01T00:00:00")
 	if err != nil {
 		return err
 	}
+
+	total, err := scouter.CountGithubUsers(tc, "location:taiwan")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Total: ", total)
 
 	// set fetch batch time interval
 	startCursor := startTime
@@ -53,11 +62,9 @@ func searchUsers(tc *http.Client) error {
 	sort := "joined"
 	order := "asc"
 
-	wg := sync.WaitGroup{}
-	defer wg.Done()
+	runtime.GOMAXPROCS(1)
 
 	for endCursor.Before(endTime) {
-
 		query := "location:Taiwan created:" + startCursor.Format(layout) + ".." + endCursor.Format(layout)
 
 		// First fetch
@@ -66,26 +73,12 @@ func searchUsers(tc *http.Client) error {
 		if err != nil {
 			return err
 		}
-		log.Println("Fetching ", query, ". Found records:", *r.Total)
+		log.Println("Fetching ", query, ". Found records:", r.GetTotal())
 
 		// paging fetch if result.Total > searchMaxPerPage
 		if *r.Total > scouter.SearchMaxPerPage {
 
-			pageNum := *r.Total / scouter.SearchMaxPerPage
-
-			for page := 1; page < pageNum+1; page++ {
-
-				pagedResult, err := scouter.SearchGithubUsers(tc, page, query, sort, order)
-				time.Sleep(2 * time.Second) // Github search API max rate
-				if err != nil {
-					return err
-				}
-
-				if err := scouter.UpsertUsers(pagedResult.Users); err != nil {
-					return err
-				}
-
-			}
+			log.Fatal("Pagesize exceed ", scouter.SearchMaxPerPage, ". Some data may not be fetched")
 
 		} else {
 			if err := scouter.UpsertUsers(r.Users); err != nil {
@@ -94,15 +87,41 @@ func searchUsers(tc *http.Client) error {
 		}
 
 		// Move cursor forward 1 month
-		startCursor = endCursor.AddDate(0, 0, 1)
-		endCursor = startCursor.AddDate(0, 1, 0) // interval: 1 month
+		startCursor = startCursor.AddDate(0, 1, 0)
+		endCursor = endCursor.AddDate(0, 1, 0) // interval: 1 month
 
-		//	time.Sleep(time.Duration(*r.Total*750) * time.Microsecond) // Github search API max rate per query
 	}
-	wg.Wait()
 	return nil
 }
 
 func updateUsersDetail(tc *http.Client) error {
+	log.Println("Starting upsert db user with github user api...")
+
+	pageSize := scouter.SearchMaxPerPage
+	pageNum := total / pageSize
+
+	runtime.GOMAXPROCS(1)
+
+	for page := 1; page < pageNum+1; page++ {
+
+		log.Println("Paging ", page, "/", pageNum)
+		users, err := scouter.FindUsers(bson.M{}, page, pageSize)
+		if err != nil {
+			return err
+		}
+
+		for _, user := range users {
+
+			detailedUser, err := scouter.GetGithubUser(tc, user.GetLogin())
+			if err != nil {
+				return err
+			}
+
+			if err := scouter.UpsertUser(*detailedUser); err != nil {
+				return err
+			}
+		}
+		time.Sleep(time.Duration(pageSize*750) * time.Microsecond) // Github search API max rate per query
+	}
 	return nil
 }

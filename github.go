@@ -60,6 +60,17 @@ func SearchGithubUsers(tc *http.Client, page int, query, sort, order string) (*g
 	return result, err
 }
 
+func CountGithubUsers(tc *http.Client, query string) (int, error) {
+	client := github.NewClient(tc)
+
+	opt := &github.SearchOptions{}
+
+	result, resp, err := client.Search.Users(context.Background(), query, opt)
+	log.Println(resp)
+
+	return result.GetTotal(), err
+}
+
 func UpsertGithubUsers(tc *http.Client, users []github.User) error {
 	for _, user := range users {
 		detailUser, err := GetGithubUser(tc, *user.Login)
