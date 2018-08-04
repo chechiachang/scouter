@@ -135,6 +135,7 @@ func updateUsersDetail(tc *http.Client) error {
 		for _, user := range users {
 
 			detailedUser, err := scouter.GetGithubUser(tc, user.GetLogin())
+			time.Sleep(750 * time.Microsecond) // Github search API max rate per query
 			if err != nil {
 				return err
 			}
@@ -148,7 +149,6 @@ func updateUsersDetail(tc *http.Client) error {
 				return err
 			}
 		}
-		time.Sleep(time.Duration(pageSize*750) * time.Microsecond) // Github search API max rate per query
 	}
 	return nil
 }
@@ -168,7 +168,7 @@ func countContribution() error {
 	pageSize := scouter.SearchMaxPerPage
 	pageNum := total / pageSize
 
-	r, err := regexp.Compile(".(0-9)* contributions")
+	r, err := regexp.Compile(".[0-9]* contributions")
 	if err != nil {
 		return err
 	}
