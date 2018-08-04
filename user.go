@@ -8,6 +8,7 @@ import (
 type User struct {
 	ID int64 `bson:"_id" json:"id"`
 	*github.User
+	Contribution int `bson:"contribution" json:"contribution"`
 }
 
 func CountUsers() (int, error) {
@@ -73,4 +74,8 @@ func UpsertUsers(users []github.User) error {
 		}
 	}
 	return nil
+}
+
+func UpdateUserContribution(user User) error {
+	return UpdateById(UserCollection, bson.M{"_id": user.ID}, bson.M{"contribution": user.Contribution})
 }
