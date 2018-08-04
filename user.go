@@ -7,7 +7,7 @@ import (
 
 type User struct {
 	ID int64 `bson:"_id" json:"id"`
-	*github.User
+	github.User
 	Contribution int `bson:"contribution" json:"contribution"`
 }
 
@@ -42,7 +42,7 @@ func InsertUsers(users []github.User) error {
 	for _, user := range users {
 		u := User{
 			ID:   *user.ID,
-			User: &user,
+			User: user,
 		}
 		if err := InsertRecord(UserCollection, u); err != nil {
 			return err
@@ -55,19 +55,15 @@ func UpdateUserById(id interface{}, update interface{}) error {
 	return UpdateById(UserCollection, id, update)
 }
 
-func UpsertUser(user github.User) error {
-	u := User{
-		ID:   *user.ID,
-		User: &user,
-	}
-	_, err := UpsertRecord(UserCollection, bson.M{"_id": u.ID}, u)
+func UpsertUser(user User) error {
+	_, err := UpsertRecord(UserCollection, bson.M{"_id": user.ID}, user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpsertUsers(users []github.User) error {
+func UpsertUsers(users []User) error {
 	for _, user := range users {
 		if err := UpsertUser(user); err != nil {
 			return err
@@ -76,6 +72,6 @@ func UpsertUsers(users []github.User) error {
 	return nil
 }
 
-func UpdateUserContribution(user User) error {
+func PatchUserContribution(user User) error {
 	return UpdateById(UserCollection, bson.M{"_id": user.ID}, bson.M{"contribution": user.Contribution})
 }
