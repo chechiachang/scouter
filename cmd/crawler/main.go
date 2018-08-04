@@ -203,14 +203,23 @@ func countContribution() error {
 				// Get contiribution number from h2 content
 				doc.Find(".js-contribution-graph .text-normal").Each(func(i int, s *goquery.Selection) {
 					content := s.Text()
-					result := r.FindString(content)                                        // 0 contributions
-					c, _ := strconv.Atoi(strings.Replace(result, " contributions", "", 1)) // 0
-					contribution += c
+					str := r.FindString(content)                        // 1.353 contributions
+					str = strings.Replace(str, ",", "", -1)             // 1,353 contributions
+					str = strings.Replace(str, "contributions", "", -1) // 1353
+					str = strings.Replace(str, " ", "", -1)             // 1353
+
+					if str != "" {
+						c, err := strconv.Atoi(str) // 0
+						if err != nil {
+							fmt.Println(err)
+						}
+						contribution += c
+					}
 				})
 			}
 
 			user.Contribution = contribution
-			fmt.Println(user.Contribution)
+			fmt.Printf("User: %d %s %d \n", user.ID, user.GetLogin(), user.Contribution)
 
 			// update user
 			if err := scouter.UpsertUser(user); err != nil {
