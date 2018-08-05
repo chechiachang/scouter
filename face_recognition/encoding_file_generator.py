@@ -1,4 +1,4 @@
-import numpy as np, glob, face_recognition, ntpath, pickle
+import numpy as np, glob, face_recognition, ntpath, pickle, os
 from os.path import basename
 from shutil import copyfile
 
@@ -20,7 +20,8 @@ def encoding():
         image = face_recognition.load_image_file(i)
         face_encoding = face_recognition.face_encodings(image)[0]
         known_faces.append(face_encoding)
-        name_index.append(basename(i))
+        filename = os.path.splitext(basename(i))[0]
+        name_index.append(filename)
 
     with open('encodings', 'wb') as fp:
         pickle.dump(known_faces, fp)
@@ -44,6 +45,6 @@ def test_encoding():
     print(name_index[min_index])
 
 
-copy_face_image()
+#copy_face_image()
 encoding()
 test_encoding()
