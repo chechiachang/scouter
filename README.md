@@ -33,11 +33,6 @@ scouter
 # How to use
 
 ```
-pip3 install dlib
-pip3 install face_recognition
-```
-
-```
 go build ./cmd/crawler/ && ./crawler --token github-api-token
 ```
 
@@ -47,6 +42,11 @@ go build ./cmd/crawler/ && ./crawler --token github-api-token
 
 ```
 face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
+```
+
+apiserver
+```
+pip3 install dlib flask face_recognition pymongo
 ```
 
 # Thanks
