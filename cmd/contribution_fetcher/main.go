@@ -52,7 +52,8 @@ func countContribution() error {
 	for page := 1; page < pageNum+1; page++ {
 
 		log.Println("Paging ", page, "/", pageNum)
-		users, err := scouter.FindUsers(bson.M{}, page, pageSize)
+		sort := "$natural"
+		users, err := scouter.FindUsers(bson.M{}, sort, page, pageSize)
 		if err != nil {
 			return err
 		}

@@ -23,7 +23,7 @@ func FindUser(query bson.M) (User, error) {
 	return user, nil
 }
 
-func FindUsers(selector bson.M, page, pageSize int) ([]User, error) {
+func FindUsers(selector bson.M, sort string, page, pageSize int) ([]User, error) {
 	var users []User
 
 	skip := (page - 1) * pageSize
@@ -31,7 +31,7 @@ func FindUsers(selector bson.M, page, pageSize int) ([]User, error) {
 		skip = 0
 	}
 
-	if err := mongoSession.DB("").C(UserCollection).Find(selector).Sort("-$natural").Skip(skip).Limit(pageSize).All(&users); err != nil {
+	if err := mongoSession.DB("").C(UserCollection).Find(selector).Sort(sort).Skip(skip).Limit(pageSize).All(&users); err != nil {
 		return users, nil
 	}
 
