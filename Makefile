@@ -14,10 +14,6 @@ contribution_fetcher:
 avatar_downloader:
 	go build ./cmd/avatar_downloader
 
-.PHONY: apiserver
-apiserver:
-	go build ./cmd/apiserver
-
 .PHONY: build
 build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader apiserver
 
@@ -25,3 +21,11 @@ build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader a
 test:
 	go test ./...
 
+.PHONY: test
+encoding:
+	rm -f data/encodings data/index
+	python ./face_recognition/encoding_file_generator.py
+
+.PHONY: apiserver
+apiserver:
+	python ./face_recognition/apiserver.py
