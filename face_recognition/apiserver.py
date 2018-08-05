@@ -10,10 +10,9 @@ collection = db.users
 # Load encodings and index
 known_faces = []
 name_index = []
-
-with open('encoding/encodings', 'rb') as fp:
+with open('face_recognition/encodings', 'rb') as fp:
     known_faces = pickle.load(fp)
-with open('encoding/index', 'rb') as fp:
+with open('face_recognition/index', 'rb') as fp:
     name_index = pickle.load(fp)
 
 @app.route("/", methods=['GET'])
@@ -37,13 +36,14 @@ def face_detection():
 
     # Get user ID by face encodings
     face_distances = face_recognition.face_distance(known_faces, encoding)
+    distance = min(face_distances)
     min_index = np.argmin(face_distances)
     userid = name_index[min_index]
 
     # Get user data by ID
     user = collection.find_one({'_id': bson.Int64(userid)})
 
-    return jsonify(user)
+    return jsonify({'user': user, 'distance': distance})
 
 @app.route("/encoding", methods=['GET'])
 def test_encoding():
