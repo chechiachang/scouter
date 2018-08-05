@@ -6,6 +6,9 @@ app = Flask(__name__)
 client = MongoClient('mongodb://127.0.0.1:27017/scouter')
 
 # Load encodings and index
+known_faces = []
+name_index = []
+
 with open('encodings', 'rb') as fp:
     known_faces = pickle.load(fp)
 with open('index', 'rb') as fp:

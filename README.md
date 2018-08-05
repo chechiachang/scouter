@@ -29,6 +29,8 @@ scouter
   - [v] Unity ios app
   - [] API portal
   - [] AR
+- [] Readme
+  - [] Add a pip requirements
 
 # How to use
 

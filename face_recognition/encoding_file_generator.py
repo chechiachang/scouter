@@ -23,10 +23,8 @@ def encoding():
         name_index.append(basename(i))
 
     with open('encodings', 'wb') as fp:
-        os.remove(fp)
         pickle.dump(known_faces, fp)
     with open('index', 'wb') as fp:
-        os.remove(fp)
         pickle.dump(name_index, fp)
 
 def test_encoding():
