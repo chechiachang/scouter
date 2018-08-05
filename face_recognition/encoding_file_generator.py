@@ -23,15 +23,15 @@ def encoding():
         filename = os.path.splitext(basename(i))[0]
         name_index.append(filename)
 
-    with open('encoding/encodings', 'wb') as fp:
+    with open('face_recognition/encodings', 'wb') as fp:
         pickle.dump(known_faces, fp)
-    with open('encoding/index', 'wb') as fp:
+    with open('face_recognition/index', 'wb') as fp:
         pickle.dump(name_index, fp)
 
 def test_encoding():
-    with open('encoding/encodings', 'rb') as fp:
+    with open('face_recognition/encodings', 'rb') as fp:
         known_faces = pickle.load(fp)
-    with open('encoding/index', 'rb') as fp:
+    with open('face_recognition/index', 'rb') as fp:
         name_index = pickle.load(fp)
 
     test_file = "data/avatars/4557.jpg"
