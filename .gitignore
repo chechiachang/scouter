@@ -4,6 +4,9 @@ contribution_fetcher
 apiserver
 avatar_downloader
 
+encodings
+index
+
 *.exe
 data/*
 
