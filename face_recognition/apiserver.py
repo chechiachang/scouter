@@ -32,6 +32,7 @@ def get_user(userid):
 def face_detection():
 
     # get encoding from request
+    print(request.get_json())
     encoding = np.asarray(request.get_json()['encoding'])
 
     # Get user ID by face encodings

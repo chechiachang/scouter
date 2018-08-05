@@ -1,4 +1,4 @@
-FROM chechiachang/scouter-apiserver-base
+FROM python:3.6-alpine3.7
 
 
 RUN apk update \
@@ -14,4 +14,4 @@ RUN apk update \
        ca-certificates curl wget \
     && rm -rf /var/cache/apk/*
 
-RUN pip install dlib flask face_recognition pymongo bson
+RUN pip install dlib flask face_recognition pymongo bson Pillow

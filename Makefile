@@ -42,7 +42,7 @@ encoding:
 base:
 	time docker build \
     --tag $(DOCKERHUB_USER)/scouter-apiserver-base \
-		--file base/face_recognition/Dockerfile .
+		--file face_recognition/base/Dockerfile .
 
 .PHONY: image
 image:
