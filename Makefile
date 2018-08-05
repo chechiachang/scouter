@@ -1,3 +1,7 @@
+DOCKERHUB_USER="chechiachang"
+
+# Build
+
 .PHONY: user_fetcher
 user_fetcher:
 	go build ./cmd/user_fetcher
@@ -17,15 +21,31 @@ avatar_downloader:
 .PHONY: build
 build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader apiserver
 
+# Test & Run
+
 .PHONY: test
 test:
 	go test ./...
 
-.PHONY: test
-encoding:
-	rm -f data/encodings data/index
-	python ./face_recognition/encoding_file_generator.py
-
 .PHONY: apiserver
 apiserver:
 	python ./face_recognition/apiserver.py
+
+# Build & ship
+
+.PHONY: encodings
+encoding:
+	rm -f face_recognition/encodings face_recognition/index
+	python ./face_recognition/encoding_file_generator.py
+
+.PHONY: base
+base:
+	time docker build \
+    --tag $(DOCKERHUB_USER)/scouter-apiserver-base \
+		--file base/face_recognition/Dockerfile .
+
+.PHONY: image
+image:
+	time docker build \
+    --tag $(DOCKERHUB_USER)/scouter-apiserver \
+		--file face_recognition/Dockerfile .
