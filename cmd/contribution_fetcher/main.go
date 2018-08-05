@@ -39,15 +39,16 @@ func countContribution() error {
 	pageNum := total / pageSize
 
 	// Use regex to get contribution number
-	contributionLine, err := regexp.Compile(".[0-9,]* contribution")
+	contributionLine, err := regexp.Compile("[0-9,]* contribution")
 	if err != nil {
 		return err
 	}
-	contributionNumber, err := regexp.Compile(".[0-9,]*")
+	contributionNumber, err := regexp.Compile("[0-9,]*")
 	if err != nil {
 		return err
 	}
 
+	// paging data from mongo db
 	for page := 1; page < pageNum+1; page++ {
 
 		log.Println("Paging ", page, "/", pageNum)
@@ -79,7 +80,7 @@ func countContribution() error {
 				doc.Find(".js-contribution-graph .text-normal").Each(func(i int, s *goquery.Selection) {
 					content := s.Text()
 					str := contributionLine.FindString(content) // 1,353 contributions or 1 contribution.
-					str = strings.Replace(str, " ", "", -1)     // 1,353 or 1. Remove comma.
+					str = strings.Replace(str, ",", "", -1)     // 1,353 or 1. Remove comma.
 					str = contributionNumber.FindString(str)    // 1353 or 1.
 
 					if str != "" {
