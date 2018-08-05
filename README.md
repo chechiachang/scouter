@@ -48,7 +48,7 @@ face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_kn
 
 apiserver
 ```
-pip3 install dlib flask face_recognition pymongo
+pip3 install dlib flask face_recognition pymongo bson
 ```
 
 # Thanks
@@ -61,6 +61,8 @@ go-github
 ```
 GET https://api.github.com/search/users?order=asc&page=11&per_page=1000&q=location%3ATaiwan&sort=joined: 422 Only the first 1000 search results are available []
 ```
+
+2604
 
 # Develop on Mac
 

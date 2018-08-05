@@ -1,38 +1,47 @@
-from flask import Flask, request,  jsonify
+from flask import Flask, request, jsonify
 from pymongo import MongoClient
-import face_recognition, pickle, numpy as np
+import face_recognition, pickle, numpy as np, bson
 
 app = Flask(__name__)
-client = MongoClient('mongodb://127.0.0.1:27017/scouter')
+client = MongoClient('mongodb://127.0.0.1:27017')
+db = client.scouter
+collection = db.users
 
 # Load encodings and index
 known_faces = []
 name_index = []
 
-with open('encodings', 'rb') as fp:
+with open('encoding/encodings', 'rb') as fp:
     known_faces = pickle.load(fp)
-with open('index', 'rb') as fp:
+with open('encoding/index', 'rb') as fp:
     name_index = pickle.load(fp)
 
 @app.route("/", methods=['GET'])
 def hello():
     return "Hello World!"
 
+@app.route("/count", methods=['GET'])
+def count():
+    return jsonify({'count':collection.count()})
+
+@app.route("/users/<userid>", methods=['GET'])
+def get_user(userid):
+    user = collection.find_one({'_id': bson.Int64(userid)})
+    return jsonify(user)
+
 @app.route("/face_detection", methods=['POST'])
 def face_detection():
 
     # get encoding from request
     encoding = np.asarray(request.get_json()['encoding'])
-    print(encoding)
 
     # Get user ID by face encodings
     face_distances = face_recognition.face_distance(known_faces, encoding)
     min_index = np.argmin(face_distances)
     userid = name_index[min_index]
-    print(userid)
 
     # Get user data by ID
-    user = client.scouter.users.find_one({'_id': userid})
+    user = collection.find_one({'_id': bson.Int64(userid)})
 
     return jsonify(user)
 
