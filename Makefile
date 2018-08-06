@@ -49,3 +49,11 @@ image:
 	time docker build \
     --tag $(DOCKERHUB_USER)/scouter-apiserver \
 		--file face_recognition/Dockerfile .
+
+.PHONY: unity
+unity:
+	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scenes/WebCamTextureFaceTrackerExample.unity unity/Assets/Scouter/Scenes
+	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scenes/WebCamTextureFaceTrackerExample.unity.meta unity/Assets/Scouter/Scenes
+	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scripts/WebCamTextureFaceTrackerExample.cs unity/Assets/Scouter/Scripts
+	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scripts/WebCamTextureFaceTrackerExample.cs.meta unity/Assets/Scouter/Scripts
+
