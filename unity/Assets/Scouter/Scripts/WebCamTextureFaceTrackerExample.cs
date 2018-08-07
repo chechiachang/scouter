@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine.Networking;
+using System.IO;
 
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ namespace FaceTrackerExample
     [Serializable]
     public class PostRequestBody
     {
-      public Mat mat;
+      public string data;
     }
 
     /// <summary>
@@ -41,6 +42,8 @@ namespace FaceTrackerExample
         /// The gray mat.
         /// </summary>
         Mat grayMat;
+
+        public Texture2D m2Texture;
         
         /// <summary>
         /// The texture.
@@ -273,24 +276,28 @@ namespace FaceTrackerExample
                                 
                             }
 
+                            //grayscale or rgba
+                            //Mat croppedImage = new Mat(grayMat, rectsList[l]);
+                            
+                            Color[] c = texture.GetPixels (rectsList[l].x, rectsList[l].y, rectsList[l].width, rectsList[l].height);
+                            m2Texture = new Texture2D (rectsList[l].width, rectsList[l].height);
+                            m2Texture.SetPixels (c);
+                            m2Texture.Apply ();
+
+                            byte[] imageBytes = m2Texture.EncodeToJPG();
+                            Destroy(m2Texture);
+
+                            File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
+
+                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
+
+                            // Display rect on texture
+
                             #if OPENCV_2
                             Core.rectangle (rgbaMat, new Point (rectsList [l].x, rectsList [l].y), new Point (rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar (255, 0, 0, 255), 2);
                             #else
                             Imgproc.rectangle(rgbaMat, new Point(rectsList [l].x, rectsList [l].y), new Point(rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar(255, 0, 0, 255), 2);
                             #endif
-
-                            //grayscale or rgba
-                            //Mat croppedImage = new Mat(grayMat, rectsList[l]);
-                            
-                            Color[] c = texture.GetPixels (rectsList[l].x, rectsList[l].y, rectsList[l].width, rectsList[l].height);
-                            Texture2D m2Texture = new Texture2D (rectsList[l].width, rectsList[l].height);
-                            m2Texture.SetPixels (c);
-                            m2Texture.Apply ();
-
-                            byte[] imageBytes = m2Texture.EncodeToPNG();
-                            Destroy(m2Texture);
-
-                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
                                                 
                         } else
                         {
@@ -331,21 +338,16 @@ namespace FaceTrackerExample
 
         IEnumerator PostRequest(string url, byte[] bytes)
         {
+            PostRequestBody body = new PostRequestBody();
+            body.data = Convert.ToBase64String(bytes);
 
-            //var uwr = new UnityWebRequest(url, "POST");
-            //var data = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
-            //uwr.uploadHandler = new UploadHandlerRaw(data);
-            //uwr.downloadHandler = new DownloadHandlerBuffer();
-            //uwr.SetRequestHeader("Content-Type", "application/json");
-
-            UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
-            UploadHandlerRaw MyUploadHandler = new UploadHandlerRaw( bytes );
-            MyUploadHandler.contentType= "application/x-www-form-urlencoded"; // might work with 'multipart/form-data'
-            uwr.uploadHandler= MyUploadHandler;
-
+            var uwr = new UnityWebRequest(url, "POST");
+            var jsonBytes = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
+            uwr.uploadHandler = new UploadHandlerRaw(jsonBytes);
+            uwr.downloadHandler = new DownloadHandlerBuffer();
+            uwr.SetRequestHeader("Content-Type", "application/json");
             //Send the request then wait here until it returns
             yield return uwr.SendWebRequest();
-
             if (uwr.isNetworkError)
             {
                 Debug.Log("Error While Sending: " + uwr.error);
@@ -354,6 +356,39 @@ namespace FaceTrackerExample
             {
                 Debug.Log("Received: " + uwr.downloadHandler.text);
             }
+
+            //UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
+            //UploadHandlerRaw MyUploadHandler = new UploadHandlerRaw( bytes );
+            //MyUploadHandler.contentType= "application/x-www-form-urlencoded"; // might work with 'multipart/form-data'
+            //uwr.uploadHandler= MyUploadHandler;
+
+            //Send the request then wait here until it returns
+            //yield return uwr.SendWebRequest();
+            //if (uwr.isNetworkError)
+            //{
+            //    Debug.Log("Error While Sending: " + uwr.error);
+            //}
+            //else
+            //{
+            //    Debug.Log("Received: " + uwr.downloadHandler.text);
+            //}
+
+            //WWWForm form = new WWWForm();
+            //string bytestring = System.Text.Encoding.UTF8.GetString(bytes);
+            //form.AddField("file", bytestring);
+
+            //UnityWebRequest www = UnityWebRequest.Post(url, form);
+            //www.SetRequestHeader("Content-Type", "multipart/form-data");
+            //yield return www.SendWebRequest();
+
+            //if (www.isNetworkError || www.isHttpError)
+            //{
+            //    Debug.Log(www.error);
+            //}
+            //else
+            //{
+            //    Debug.Log("Form upload complete!");
+            //}
         }
 
         /// <summary>
