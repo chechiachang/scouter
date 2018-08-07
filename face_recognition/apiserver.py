@@ -78,11 +78,17 @@ def upload_face():
             userid = name_index[min_index]
 
             # Get user data by ID
-            user = collection.find_one({'_id': bson.Int64(userid)})
-            #print(user)
-
-            response = {'user': user, 'distance': distance}
-            print(response)
+            obj = collection.find_one({'_id': bson.Int64(userid)})
+            user = obj['user']
+            response = {
+                    'id': obj['_id'], 
+                    'contribution': obj['contribution'], 
+                    'followers': user['followers'], 
+                    'publicgists': user['publicgists'], 
+                    'publicrepos': user['publicrepos'], 
+                    'distance': distance
+                    }
+            #print(response)
 
             return jsonify(response)
 
@@ -92,7 +98,7 @@ def upload_face():
     else:
         print("Get image from request error")
 
-    return jsonify({'user': "unknown", 'distance': 1})
+    return jsonify({})
 
 @app.route("/encoding", methods=['GET'])
 def test_encoding():
@@ -101,4 +107,4 @@ def test_encoding():
     face_encoding = face_recognition.face_encodings(image)[0]
     return jsonify(face_encoding.tolist())
 
-app.run(host='127.0.0.1', debug=True)
+app.run(host='0.0.0.0', debug=True)
