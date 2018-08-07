@@ -20,6 +20,56 @@ namespace FaceTrackerExample
     {
       public string data;
     }
+    
+public class User
+{
+    public string login { get; set; }
+    public int id { get; set; }
+    public string avatarurl { get; set; }
+    public string htmlurl { get; set; }
+    public string gravatarid { get; set; }
+    public string name { get; set; }
+    public string company { get; set; }
+    public string blog { get; set; }
+    public string location { get; set; }
+    public object email { get; set; }
+    public object hireable { get; set; }
+    public object bio { get; set; }
+    public int publicrepos { get; set; }
+    public int publicgists { get; set; }
+    public int followers { get; set; }
+    public int following { get; set; }
+    public DateTime createdat { get; set; }
+    public DateTime updatedat { get; set; }
+    public object suspendedat { get; set; }
+    public string type { get; set; }
+    public bool siteadmin { get; set; }
+    public object totalprivaterepos { get; set; }
+    public object ownedprivaterepos { get; set; }
+    public object privategists { get; set; }
+    public object diskusage { get; set; }
+    public object collaborators { get; set; }
+    public object plan { get; set; }
+    public string url     { get; set; }
+    public string eventsurl { get; set; }
+    public string followingurl { get; set; }
+    public string followersurl { get; set; }
+    public string gistsurl { get; set; }
+    public string organizationsurl { get; set; }
+    public string receivedeventsurl { get; set; }
+    public string reposurl { get; set; }
+    public string starredurl { get; set; }
+    public string subscriptionsurl { get; set; }
+    public List<object> textmatches { get; set; }
+    public object permissions { get; set; }
+}
+
+public class ResponseObject
+{
+    public int _id;
+    public User user;
+    public int contribution;
+}
 
     /// <summary>
     /// WebCamTexture face tracker example.
@@ -290,7 +340,7 @@ namespace FaceTrackerExample
                             //Debug
                             //File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
 
-                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
+                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes, rgbaMat));
 
                             // Display rect on texture
 
@@ -316,14 +366,14 @@ namespace FaceTrackerExample
                 //    faceTracker.draw(rgbaMat, new Scalar(255, 0, 0, 255), new Scalar(0, 255, 0, 255));
                                         
                                         
-                #if OPENCV_2
-                Core.putText (rgbaMat, "'Tap' or 'Space Key' to Reset", new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
-                #else
-                Imgproc.putText(rgbaMat, "'Tap' or 'Space Key' to Reset", new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
-                #endif
+                //#if OPENCV_2
+                //Core.putText (rgbaMat, "'Tap' or 'Space Key' to Reset", new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
+                //#else
+                //Imgproc.putText(rgbaMat, "'Tap' or 'Space Key' to Reset", new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
+                //#endif
                                         
                                         
-//                              Core.putText (rgbaMat, "W:" + rgbaMat.width () + " H:" + rgbaMat.height () + " SO:" + Screen.orientation, new Point (5, rgbaMat.rows () - 10), Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
+                //Core.putText (rgbaMat, "W:" + rgbaMat.width () + " H:" + rgbaMat.height () + " SO:" + Screen.orientation, new Point (5, rgbaMat.rows () - 10), Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
 
                 Utils.matToTexture2D(rgbaMat, texture, webCamTextureToMatHelper.GetBufferColors());
                                         
@@ -337,7 +387,7 @@ namespace FaceTrackerExample
         }
 
 
-        IEnumerator PostRequest(string url, byte[] bytes)
+        IEnumerator PostRequest(string url, byte[] bytes, Mat rgbaMat)
         {
             PostRequestBody body = new PostRequestBody();
             body.data = Convert.ToBase64String(bytes);
@@ -356,6 +406,13 @@ namespace FaceTrackerExample
             else
             {
                 Debug.Log("Received: " + uwr.downloadHandler.text);
+                ResponseObject obj = JsonUtility.FromJson<ResponseObject>(uwr.downloadHandler.text);
+
+                //#if OPENCV_2
+                //Core.putText (rgbaMat, "Contribution " + obj.contribution.ToString(), new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
+                //#else
+                //Imgproc.putText(rgbaMat, "Contribution" + obj.contribution.ToString(), new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
+                //#endif
             }
 
             //UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
