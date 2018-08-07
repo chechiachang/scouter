@@ -21,55 +21,59 @@ namespace FaceTrackerExample
       public string data;
     }
     
-public class User
-{
-    public string login { get; set; }
-    public int id { get; set; }
-    public string avatarurl { get; set; }
-    public string htmlurl { get; set; }
-    public string gravatarid { get; set; }
-    public string name { get; set; }
-    public string company { get; set; }
-    public string blog { get; set; }
-    public string location { get; set; }
-    public object email { get; set; }
-    public object hireable { get; set; }
-    public object bio { get; set; }
-    public int publicrepos { get; set; }
-    public int publicgists { get; set; }
-    public int followers { get; set; }
-    public int following { get; set; }
-    public DateTime createdat { get; set; }
-    public DateTime updatedat { get; set; }
-    public object suspendedat { get; set; }
-    public string type { get; set; }
-    public bool siteadmin { get; set; }
-    public object totalprivaterepos { get; set; }
-    public object ownedprivaterepos { get; set; }
-    public object privategists { get; set; }
-    public object diskusage { get; set; }
-    public object collaborators { get; set; }
-    public object plan { get; set; }
-    public string url     { get; set; }
-    public string eventsurl { get; set; }
-    public string followingurl { get; set; }
-    public string followersurl { get; set; }
-    public string gistsurl { get; set; }
-    public string organizationsurl { get; set; }
-    public string receivedeventsurl { get; set; }
-    public string reposurl { get; set; }
-    public string starredurl { get; set; }
-    public string subscriptionsurl { get; set; }
-    public List<object> textmatches { get; set; }
-    public object permissions { get; set; }
-}
-
-public class ResponseObject
-{
-    public int _id;
-    public User user;
-    public int contribution;
-}
+    [Serializable]
+    public class User
+    {
+        public string login { get; set; }
+        public int id { get; set; }
+        public string avatarurl { get; set; }
+        public string htmlurl { get; set; }
+        public string gravatarid { get; set; }
+        public string name { get; set; }
+        public string company { get; set; }
+        public string blog { get; set; }
+        public string location { get; set; }
+        public object email { get; set; }
+        public object hireable { get; set; }
+        public object bio { get; set; }
+        public int publicrepos { get; set; }
+        public int publicgists { get; set; }
+        public int followers { get; set; }
+        public int following { get; set; }
+        public object createdat { get; set; }
+        public object updatedat { get; set; }
+        public object suspendedat { get; set; }
+        public string type { get; set; }
+        public bool siteadmin { get; set; }
+        public object totalprivaterepos { get; set; }
+        public object ownedprivaterepos { get; set; }
+        public object privategists { get; set; }
+        public object diskusage { get; set; }
+        public object collaborators { get; set; }
+        public object plan { get; set; }
+        public string url     { get; set; }
+        public string eventsurl { get; set; }
+        public string followingurl { get; set; }
+        public string followersurl { get; set; }
+        public string gistsurl { get; set; }
+        public string organizationsurl { get; set; }
+        public string receivedeventsurl { get; set; }
+        public string reposurl { get; set; }
+        public string starredurl { get; set; }
+        public string subscriptionsurl { get; set; }
+        public List<object> textmatches { get; set; }
+        public object permissions { get; set; }
+    }
+    
+    [Serializable]
+    public class ResponseObject
+    {
+        public int id;
+        public int contribution;
+        public int followers;
+        public int publicGists;
+        public int publicRepos;
+    }
 
     /// <summary>
     /// WebCamTexture face tracker example.
@@ -83,6 +87,8 @@ public class ResponseObject
         /// </summary>
         public bool isAutoResetMode = true;
 
+        public string apiserverip;
+
         /// <summary>
         /// The auto reset mode toggle.
         /// </summary>
@@ -94,6 +100,11 @@ public class ResponseObject
         Mat grayMat;
 
         public Texture2D m2Texture;
+        public int id = 0;
+        public int contribution = 0;
+        public int publicRepos = 0;
+        public int publicGists = 0;
+        public int followers = 0;
         
         /// <summary>
         /// The texture.
@@ -329,8 +340,13 @@ public class ResponseObject
                             //grayscale or rgba
                             //Mat croppedImage = new Mat(grayMat, rectsList[l]);
 
-                            Color[] c = texture.GetPixels (rectsList[l].x, rectsList[l].y, rectsList[l].width, rectsList[l].height);
-                            m2Texture = new Texture2D (rectsList[l].width, rectsList[l].height);
+                            int x = rectsList[l].x;
+                            int y = rectsList[l].y;
+                            int w = rectsList[l].width;
+                            int h = rectsList[l].height;
+
+                            Color[] c = texture.GetPixels (x, y, w, h);
+                            m2Texture = new Texture2D (w, h);
                             m2Texture.SetPixels (c);
                             m2Texture.Apply ();
 
@@ -340,7 +356,8 @@ public class ResponseObject
                             //Debug
                             //File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
 
-                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes, rgbaMat));
+                            //StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
+                            StartCoroutine(PostRequest("http://"+apiserverip+":5000/face_detection", imageBytes));
 
                             // Display rect on texture
 
@@ -371,6 +388,11 @@ public class ResponseObject
                 //#else
                 //Imgproc.putText(rgbaMat, "'Tap' or 'Space Key' to Reset", new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
                 //#endif
+                #if OPENCV_2
+                Core.putText (rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
+                #else
+                Imgproc.putText(rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
+                #endif
                                         
                                         
                 //Core.putText (rgbaMat, "W:" + rgbaMat.width () + " H:" + rgbaMat.height () + " SO:" + Screen.orientation, new Point (5, rgbaMat.rows () - 10), Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
@@ -387,7 +409,7 @@ public class ResponseObject
         }
 
 
-        IEnumerator PostRequest(string url, byte[] bytes, Mat rgbaMat)
+        IEnumerator PostRequest(string url, byte[] bytes)
         {
             PostRequestBody body = new PostRequestBody();
             body.data = Convert.ToBase64String(bytes);
@@ -406,13 +428,34 @@ public class ResponseObject
             else
             {
                 Debug.Log("Received: " + uwr.downloadHandler.text);
+                
                 ResponseObject obj = JsonUtility.FromJson<ResponseObject>(uwr.downloadHandler.text);
-
-                //#if OPENCV_2
-                //Core.putText (rgbaMat, "Contribution " + obj.contribution.ToString(), new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
-                //#else
-                //Imgproc.putText(rgbaMat, "Contribution" + obj.contribution.ToString(), new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
-                //#endif
+                //id = 0;
+                //contribution = 0;
+                //publicRepos = 0;
+                //publicGist = 0;
+                //followers = 0;
+                Debug.Log("Json: " + obj.id);
+                if (obj.contribution is int)
+                {
+                    contribution = obj.contribution;
+                }
+                if (obj.id is int)
+                {
+                    id = obj.id;
+                }
+                if (obj.publicRepos is int)
+                {
+                    publicRepos = obj.publicRepos;
+                }
+                if (obj.publicGists is int)
+                {
+                    publicGists = obj.publicGists;
+                }
+                if (obj.followers is int)
+                {
+                    followers = obj.followers;
+                }
             }
 
             //UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
@@ -470,6 +513,12 @@ public class ResponseObject
             #else
             Application.LoadLevel("FaceTrackerExample");
             #endif
+        }
+
+        public void OnApiserverIpchange(string ip)
+        {
+            apiserverip = ip;
+            Debug.Log("apiserverip set to " + apiserverip);
         }
 
         /// <summary>
