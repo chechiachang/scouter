@@ -51,35 +51,48 @@ def face_detection():
 @app.route('/face_detection', methods=['POST'])
 def upload_face():
 
-    json = request.json
+    json = request.get_json()
+    #print(json)
+
     if json :
-        print("Receive data string length:" + str(len(json['data'])))
-        dataBytes = base64.b64decode(json['data'])
-
-        image_64_decode = base64.decodestring(dataBytes) 
-
-        # Debug
+        imageBytes = base64.b64decode(json['data'])
+        
+        # FIXME skip write image file
         image = open('data/decode.jpg', 'wb') 
-        # create a writable image and write the decoding result 
-        image.write(image_64_decode)
+        image.write(imageBytes)
         image.close()
 
-        face_encoding = face_recognition.face_encodings(image)[0]
-        print(face_encoding)
+        faceImage = face_recognition.load_image_file('data/decode.jpg')
+        face_encodings = face_recognition.face_encodings(faceImage)
+
+        if len(face_encodings) > 0:
+            face_encoding = face_encodings[0]
+            #print(face_encoding)
+
+            # Get distances between face_encoding to all known_faces
+            face_distances = face_recognition.face_distance(known_faces, face_encoding)
+            # Get minimum distance
+            distance = min(face_distances)
+            min_index = np.argmin(face_distances)
+            # Get user ID by face encodings
+            userid = name_index[min_index]
+
+            # Get user data by ID
+            user = collection.find_one({'_id': bson.Int64(userid)})
+            #print(user)
+
+            response = {'user': user, 'distance': distance}
+            print(response)
+
+            return jsonify(response)
+
+        else:
+            print("Failed to get encoding from image")
+
     else:
         print("Get image from request error")
-        return 
 
-    # Get user ID by face encodings
-    face_distances = face_recognition.face_distance(known_faces, encoding)
-    distance = min(face_distances)
-    min_index = np.argmin(face_distances)
-    userid = name_index[min_index]
-
-    # Get user data by ID
-    user = collection.find_one({'_id': bson.Int64(userid)})
-
-    return jsonify({'user': user, 'distance': distance})
+    return jsonify({'user': "unknown", 'distance': 1})
 
 @app.route("/encoding", methods=['GET'])
 def test_encoding():
