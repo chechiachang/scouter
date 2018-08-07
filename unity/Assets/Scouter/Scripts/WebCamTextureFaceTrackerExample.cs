@@ -256,32 +256,41 @@ namespace FaceTrackerExample
                             {
                                 faceTracker.addPoints(faces);
                             }
-                            //draw face rect
-                            int largest = 0;
+                            //draw face rect with largest rect
+                            int l = 0;
                             for (int i = 0; i < rectsList.Count; i++)
                             {
-                                if (rectsList [i].area() > rectsList [largest].area())
+                                if (rectsList [i].area() > rectsList [l].area())
                                 {
-                                  largest = i;
+                                  l = i;
                                 }
-                                
+
                                 //#if OPENCV_2
-                                //Core.rectangle (rgbaMat, new Point (rectsList [i].x, rectsList [i].y), new Point (rectsList [i].x + rectsLIst [i].width, rectsList [i].y + rectsList [i].height), new Scalar (255, 0, 0, 255), 2);
+                                //Core.rectangle (rgbaMat, new Point (rectsList [i].x, rectsList [i].y), new Point (rectsList [i].x + rectsList [i].width, rectsList [i].y + rectsList [i].height), new Scalar (255, 0, 0, 255), 2);
                                 //#else
                                 //Imgproc.rectangle(rgbaMat, new Point(rectsList [i].x, rectsList [i].y), new Point(rectsList [i].x + rectsList [i].width, rectsList [i].y + rectsList [i].height), new Scalar(255, 0, 0, 255), 2);
                                 //#endif
+                                
                             }
 
-                            //grayscale or rgba
-                            Mat croppedImage = new Mat(grayMat, rectsList[largest]);
-
-                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", croppedImage));
-
                             #if OPENCV_2
-                            Core.rectangle (rgbaMat, new Point (rectsList [largest].x, rectsList [largest].y), new Point (rectsList [largest].x + rectsLIst [largest].width, rectsList [largest].y + rectsList [largest].height), new Scalar (255, 0, 0, 255), 2);
+                            Core.rectangle (rgbaMat, new Point (rectsList [l].x, rectsList [l].y), new Point (rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar (255, 0, 0, 255), 2);
                             #else
-                            Imgproc.rectangle(rgbaMat, new Point(rectsList [largest].x, rectsList [largest].y), new Point(rectsList [largest].x + rectsList [largest].width, rectsList [largest].y + rectsList [largest].height), new Scalar(255, 0, 0, 255), 2);
+                            Imgproc.rectangle(rgbaMat, new Point(rectsList [l].x, rectsList [l].y), new Point(rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar(255, 0, 0, 255), 2);
                             #endif
+
+                            //grayscale or rgba
+                            //Mat croppedImage = new Mat(grayMat, rectsList[l]);
+                            
+                            Color[] c = texture.GetPixels (rectsList[l].x, rectsList[l].y, rectsList[l].width, rectsList[l].height);
+                            Texture2D m2Texture = new Texture2D (rectsList[l].width, rectsList[l].height);
+                            m2Texture.SetPixels (c);
+                            m2Texture.Apply ();
+
+                            byte[] imageBytes = m2Texture.EncodeToPNG();
+                            Destroy(m2Texture);
+
+                            StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
                                                 
                         } else
                         {
@@ -320,18 +329,19 @@ namespace FaceTrackerExample
         }
 
 
-        IEnumerator PostRequest(string url, Mat m)
+        IEnumerator PostRequest(string url, byte[] bytes)
         {
-            PostRequestBody body = new PostRequestBody();
-            body.mat = m;
 
-            Debug.Log(m.ToString());
+            //var uwr = new UnityWebRequest(url, "POST");
+            //var data = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
+            //uwr.uploadHandler = new UploadHandlerRaw(data);
+            //uwr.downloadHandler = new DownloadHandlerBuffer();
+            //uwr.SetRequestHeader("Content-Type", "application/json");
 
-            var uwr = new UnityWebRequest(url, "POST");
-            var data = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
-            uwr.uploadHandler = new UploadHandlerRaw(data);
-            uwr.downloadHandler = new DownloadHandlerBuffer();
-            uwr.SetRequestHeader("Content-Type", "application/json");
+            UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
+            UploadHandlerRaw MyUploadHandler = new UploadHandlerRaw( bytes );
+            MyUploadHandler.contentType= "application/x-www-form-urlencoded"; // might work with 'multipart/form-data'
+            uwr.uploadHandler= MyUploadHandler;
 
             //Send the request then wait here until it returns
             yield return uwr.SendWebRequest();
