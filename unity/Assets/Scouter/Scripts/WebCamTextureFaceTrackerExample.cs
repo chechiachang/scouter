@@ -241,19 +241,19 @@ namespace FaceTrackerExample
                                 } else
                                 {
                                                         
-                                    for (int i = 0; i < rectsList.Count; i++)
-                                    {
-                                                        
-                                        OpenCVForUnity.Rect trackRect = new OpenCVForUnity.Rect(rectsList [i].x + rectsList [i].width / 3, rectsList [i].y + rectsList [i].height / 2, rectsList [i].width / 3, rectsList [i].height / 3);
-                                        //It determines whether nose point has been included in trackRect.                                      
-                                        if (i < pointsList.Count && !trackRect.contains(pointsList [i] [67]))
-                                        {
-                                            rectsList.RemoveAt(i);
-                                            pointsList.RemoveAt(i);
-//                                                                                      Debug.Log ("remove " + i);
-                                        }
-                                        Imgproc.rectangle(rgbaMat, new Point(trackRect.x, trackRect.y), new Point(trackRect.x + trackRect.width, trackRect.y + trackRect.height), new Scalar(0, 0, 255, 255), 2);
-                                    }
+                                    // Disable nose rect display
+                                    //for (int i = 0; i < rectsList.Count; i++)
+                                    //{
+                                    //    OpenCVForUnity.Rect trackRect = new OpenCVForUnity.Rect(rectsList [i].x + rectsList [i].width / 3, rectsList [i].y + rectsList [i].height / 2, rectsList [i].width / 3, rectsList [i].height / 3);
+                                    //    //It determines whether nose point has been included in trackRect.                                      
+                                    //    if (i < pointsList.Count && !trackRect.contains(pointsList [i] [67]))
+                                    //    {
+                                    //        rectsList.RemoveAt(i);
+                                    //        pointsList.RemoveAt(i);
+//                                  //                                                    Debug.Log ("remove " + i);
+                                    //    }
+                                    //    Imgproc.rectangle(rgbaMat, new Point(trackRect.x, trackRect.y), new Point(trackRect.x + trackRect.width, trackRect.y + trackRect.height), new Scalar(0, 0, 255, 255), 2);
+                                    //}
                                 }
                             } else
                             {
@@ -278,7 +278,7 @@ namespace FaceTrackerExample
 
                             //grayscale or rgba
                             //Mat croppedImage = new Mat(grayMat, rectsList[l]);
-                            
+
                             Color[] c = texture.GetPixels (rectsList[l].x, rectsList[l].y, rectsList[l].width, rectsList[l].height);
                             m2Texture = new Texture2D (rectsList[l].width, rectsList[l].height);
                             m2Texture.SetPixels (c);
@@ -287,7 +287,8 @@ namespace FaceTrackerExample
                             byte[] imageBytes = m2Texture.EncodeToJPG();
                             Destroy(m2Texture);
 
-                            File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
+                            //Debug
+                            //File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
 
                             StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
 
