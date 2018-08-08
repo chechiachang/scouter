@@ -120,32 +120,32 @@ unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerE
 
 # TODOs
 
-- [v] Github api crawler
-  - [v] Add an api to search user in Taiwan 
-    - [v] Order by joined asc
-    - [v] Implement a api call with narrowed search condition
-  - [v] Add an api to fetch user Data
-    - [v] Get user with userUrl
-    - [v] order by most follower
-    - [v] order by most commit. Might need query by username.
-  - [v] Save user data to mongodb
-    - [v] username
-    - [v] avatar
-    - [v] # of follower
-    - [v] # of contributions
+- [x] Github api crawler
+  - [x] Add an api to search user in Taiwan 
+    - [x] Order by joined asc
+    - [x] Implement a api call with narrowed search condition
+  - [x] Add an api to fetch user Data
+    - [x] Get user with userUrl
+    - [x] order by most follower
+    - [x] order by most commit. Might need query by username.
+  - [x] Save user data to mongodb
+    - [x] username
+    - [x] avatar
+    - [x] # of follower
+    - [x] # of contributions
 - [x] Google Search API Face downloader
   - [x] Search Avatar with github username and login
   - [x] Google Custom Search API
     [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
-- [v] Face Recognizer
-  - [v] Face detector
-    - [v] Generate face encoding and save to Python Pickle file
-    - [v] Face Recognition
+- [x] Face Recognizer
+  - [x] Face detector
+    - [x] Generate face encoding and save to Python Pickle file
+    - [x] Face Recognition
       [Face recognition](https://github.com/ageitgey/face_recognition)
-- [v] Front-End
-  - [v] Unity ios app
-  - [v] API portal
+- [x] Front-End
+  - [x] Unity ios app
+  - [x] API portal
   - [ ] AR GUI
-- [v] Readme
+- [x] Readme
 
 
