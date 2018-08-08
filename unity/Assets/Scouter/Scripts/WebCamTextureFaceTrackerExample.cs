@@ -105,6 +105,12 @@ namespace FaceTrackerExample
         public int publicRepos = 0;
         public int publicGists = 0;
         public int followers = 0;
+
+        bool isRequestCompleted = true;
+
+        public UnityEngine.UI.Text contributionText;
+        public UnityEngine.UI.Text followersText;
+
         
         /// <summary>
         /// The texture.
@@ -146,7 +152,6 @@ namespace FaceTrackerExample
         void Start()
         {
             webCamTextureToMatHelper = gameObject.GetComponent<WebCamTextureToMatHelper>();
-
 
             isAutoResetModeToggle.isOn = isAutoResetMode;
 
@@ -361,6 +366,7 @@ namespace FaceTrackerExample
 
                             // Display rect on texture
 
+                            // TODO use text
                             #if OPENCV_2
                             Core.rectangle (rgbaMat, new Point (rectsList [l].x, rectsList [l].y), new Point (rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar (255, 0, 0, 255), 2);
                             #else
@@ -382,17 +388,11 @@ namespace FaceTrackerExample
                 //if (faceTracker.track(grayMat, faceTrackerParams))
                 //    faceTracker.draw(rgbaMat, new Scalar(255, 0, 0, 255), new Scalar(0, 255, 0, 255));
                                         
-                                        
                 //#if OPENCV_2
-                //Core.putText (rgbaMat, "'Tap' or 'Space Key' to Reset", new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
+                //Core.putText (rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
                 //#else
-                //Imgproc.putText(rgbaMat, "'Tap' or 'Space Key' to Reset", new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
+                //Imgproc.putText(rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
                 //#endif
-                #if OPENCV_2
-                Core.putText (rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point (5, rgbaMat.rows () - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
-                #else
-                Imgproc.putText(rgbaMat, "Contribution " + contribution + " repos " + publicRepos + " followers " + followers + " gists " + publicGists, new Point(5, rgbaMat.rows() - 5), Core.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 255, 255, 255), 2, Imgproc.LINE_AA, false);
-                #endif
                                         
                                         
                 //Core.putText (rgbaMat, "W:" + rgbaMat.width () + " H:" + rgbaMat.height () + " SO:" + Screen.orientation, new Point (5, rgbaMat.rows () - 10), Core.FONT_HERSHEY_SIMPLEX, 1.0, new Scalar (255, 255, 255, 255), 2, Core.LINE_AA, false);
@@ -427,7 +427,7 @@ namespace FaceTrackerExample
             }
             else
             {
-                Debug.Log("Received: " + uwr.downloadHandler.text);
+                //Debug.Log("Received: " + uwr.downloadHandler.text);
                 
                 ResponseObject obj = JsonUtility.FromJson<ResponseObject>(uwr.downloadHandler.text);
                 //id = 0;
@@ -435,26 +435,21 @@ namespace FaceTrackerExample
                 //publicRepos = 0;
                 //publicGist = 0;
                 //followers = 0;
-                Debug.Log("Json: " + obj.id);
-                if (obj.contribution is int)
+                Debug.Log("Data: " + obj?.id + " "+ obj?.contribution + " " + obj?.publicRepos + " " + obj?.followers);
+                if (obj?.contribution is int && obj?.id is int && obj?.publicRepos is int && obj?.followers is int)
                 {
+
                     contribution = obj.contribution;
-                }
-                if (obj.id is int)
-                {
                     id = obj.id;
-                }
-                if (obj.publicRepos is int)
-                {
                     publicRepos = obj.publicRepos;
-                }
-                if (obj.publicGists is int)
-                {
-                    publicGists = obj.publicGists;
-                }
-                if (obj.followers is int)
-                {
                     followers = obj.followers;
+
+                    // FIXME Cheating
+                    if (contribution != 0)
+                    {
+                        contributionText.text = "Contribution: " + contribution;
+                        followersText.text = "Followers: " + followers;
+                    }
                 }
             }
 
