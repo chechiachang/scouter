@@ -88,7 +88,7 @@ def upload_face():
                     'publicrepos': user['publicrepos'], 
                     'distance': distance
                     }
-            #print(response)
+            print(response)
 
             return jsonify(response)
 

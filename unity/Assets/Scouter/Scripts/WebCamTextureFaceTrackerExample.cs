@@ -71,8 +71,8 @@ namespace FaceTrackerExample
         public int id;
         public int contribution;
         public int followers;
-        public int publicGists;
-        public int publicRepos;
+        public int publicgists;
+        public int publicrepos;
     }
 
     /// <summary>
@@ -102,14 +102,16 @@ namespace FaceTrackerExample
         public Texture2D m2Texture;
         public int id = 0;
         public int contribution = 0;
-        public int publicRepos = 0;
-        public int publicGists = 0;
+        public int publicrepos = 0;
+        public int publicgists = 0;
         public int followers = 0;
 
         bool isRequestCompleted = true;
 
         public UnityEngine.UI.Text contributionText;
         public UnityEngine.UI.Text followersText;
+        public UnityEngine.UI.Text reposText;
+        public UnityEngine.UI.Text gistsText;
 
         
         /// <summary>
@@ -334,11 +336,11 @@ namespace FaceTrackerExample
                                   l = i;
                                 }
 
-                                //#if OPENCV_2
-                                //Core.rectangle (rgbaMat, new Point (rectsList [i].x, rectsList [i].y), new Point (rectsList [i].x + rectsList [i].width, rectsList [i].y + rectsList [i].height), new Scalar (255, 0, 0, 255), 2);
-                                //#else
-                                //Imgproc.rectangle(rgbaMat, new Point(rectsList [i].x, rectsList [i].y), new Point(rectsList [i].x + rectsList [i].width, rectsList [i].y + rectsList [i].height), new Scalar(255, 0, 0, 255), 2);
-                                //#endif
+                                #if OPENCV_2
+                                Core.rectangle (rgbaMat, new Point (rectsList [l].x, rectsList [l].y), new Point (rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar (255, 0, 0, 255), 2);
+                                #else
+                                Imgproc.rectangle(rgbaMat, new Point(rectsList [l].x, rectsList [l].y), new Point(rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar(255, 0, 0, 255), 2);
+                                #endif
                                 
                             }
 
@@ -362,17 +364,12 @@ namespace FaceTrackerExample
                             //File.WriteAllBytes(Application.dataPath + "/image.jpg", imageBytes);
 
                             //StartCoroutine(PostRequest("http://localhost:5000/face_detection", imageBytes));
-                            StartCoroutine(PostRequest("http://"+apiserverip+":5000/face_detection", imageBytes));
+                            if (isRequestCompleted){
+                                StartCoroutine(PostRequest("http://"+apiserverip+":5000/face_detection", imageBytes));
+                            }
 
                             // Display rect on texture
-
-                            // TODO use text
-                            #if OPENCV_2
-                            Core.rectangle (rgbaMat, new Point (rectsList [l].x, rectsList [l].y), new Point (rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar (255, 0, 0, 255), 2);
-                            #else
-                            Imgproc.rectangle(rgbaMat, new Point(rectsList [l].x, rectsList [l].y), new Point(rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar(255, 0, 0, 255), 2);
-                            #endif
-                                                
+                                               
                         } else
                         {
                             if (isAutoResetMode)
@@ -411,6 +408,8 @@ namespace FaceTrackerExample
 
         IEnumerator PostRequest(string url, byte[] bytes)
         {
+            isRequestCompleted = false;
+
             PostRequestBody body = new PostRequestBody();
             body.data = Convert.ToBase64String(bytes);
 
@@ -424,6 +423,7 @@ namespace FaceTrackerExample
             if (uwr.isNetworkError)
             {
                 Debug.Log("Error While Sending: " + uwr.error);
+                isRequestCompleted = true;
             }
             else
             {
@@ -435,13 +435,14 @@ namespace FaceTrackerExample
                 //publicRepos = 0;
                 //publicGist = 0;
                 //followers = 0;
-                Debug.Log("Data: " + obj?.id + " "+ obj?.contribution + " " + obj?.publicRepos + " " + obj?.followers);
-                if (obj?.contribution is int && obj?.id is int && obj?.publicRepos is int && obj?.followers is int)
+                //Debug.Log("Data: " + obj?.id + " "+ obj?.contribution + " " + obj?.publicrepos + " " + obj?.followers);
+                if (obj?.contribution is int)
                 {
 
                     contribution = obj.contribution;
                     id = obj.id;
-                    publicRepos = obj.publicRepos;
+                    publicrepos = obj.publicrepos;
+                    publicgists = obj.publicgists;
                     followers = obj.followers;
 
                     // FIXME Cheating
@@ -449,9 +450,13 @@ namespace FaceTrackerExample
                     {
                         contributionText.text = "Contribution: " + contribution;
                         followersText.text = "Followers: " + followers;
+                        reposText.text = "Repos: " + publicrepos;
+                        gistsText.text = "Gists: " + publicgists;
                     }
                 }
             }
+
+            isRequestCompleted = true;
 
             //UnityWebRequest uwr = new UnityWebRequest( url , UnityWebRequest.kHttpVerbPOST );
             //UploadHandlerRaw MyUploadHandler = new UploadHandlerRaw( bytes );
