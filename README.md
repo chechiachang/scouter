@@ -18,19 +18,20 @@ scouter
     - [v] avatar
     - [v] # of follower
     - [v] # of contributions
-- [] Google Search API Face downloader
-  - [] Search Avatar with github username and login
-  - [] [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
+- [x] Google Search API Face downloader
+  - [x] Search Avatar with github username and login
+  - [x] Google Custom Search API
+    [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
 - [v] Face Recognizer
   - [v] Face detector
-    - [] Generate face landmarks
-    - [v] [Face recognition](https://github.com/ageitgey/face_recognition)
-- [] Front-End
+    - [v] Generate face encoding and save to Python Pickle file
+    - [v] Face Recognition
+      [Face recognition](https://github.com/ageitgey/face_recognition)
+- [v] Front-End
   - [v] Unity ios app
-  - [] API portal
-  - [] AR
-- [] Readme
-  - [] Add a pip requirements
+  - [v] API portal
+  - [] AR GUI
+- [v] Readme
 
 # How to use
 
