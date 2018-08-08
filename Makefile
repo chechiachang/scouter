@@ -52,8 +52,4 @@ image:
 
 .PHONY: unity
 unity:
-	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scenes/WebCamTextureFaceTrackerExample.unity unity/Assets/Scouter/Scenes
-	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scenes/WebCamTextureFaceTrackerExample.unity.meta unity/Assets/Scouter/Scenes
-	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scripts/WebCamTextureFaceTrackerExample.cs unity/Assets/Scouter/Scripts
-	cp /Users/Shared/Unity/scouter2/Assets/FaceTrackerExample/Scripts/WebCamTextureFaceTrackerExample.cs.meta unity/Assets/Scouter/Scripts
-
+	cp -rf /Users/Shared/Unity/scouter2/Assets/Scouter unity/Assets/
