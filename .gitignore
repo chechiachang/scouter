@@ -3,10 +3,16 @@ user_detail_fetcher
 contribution_fetcher
 apiserver
 avatar_downloader
-
-*.exe
 data/*
-
 logs/*
 
+# python
 __pycache__/
+
+# mac
+**/.DS_Store
+
+# vendors
+vendor/*
+!vendor/vendor.json
+
