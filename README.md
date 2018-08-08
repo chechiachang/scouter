@@ -1,7 +1,122 @@
-scouter
----
+Scouter
+===
+
+Scouter: A human face detector which show your github contribution statistics.
 
 [![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
+
+# Fetching data from github with github api
+
+1. Have a local running mongoDB
+
+```
+docker run -d --name mongo mongo
+```
+
+2. Generate github access token
+  - User -> settings -> Developer settings -> Personal access tokens
+  - Keep your token safe
+
+3. Run fetchers with token
+
+```
+# Fetch user with Github Search API
+go build ./cmd/user_fetcher && ./user_fetcher -token <github-api-token>
+
+# Fetch user detail information like follwers and repos with Github User API
+go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token <github-api-token>
+
+# Fetch users' avatar with user.url from data in mongodb
+go build ./cmd/avatar_downloader && ./avatar_downloader
+
+# Fetch users' contribution statics by parsing html response of user.url from data in mongodb
+go build ./cmd/contribution_fetcher && ./contribution_fetcher
+```
+
+4. Make sure data are good to go
+
+Check user data in mongodb
+```
+docker exec -it mongo scouter
+db.users.findOne()
+```
+
+Check users' avatar
+```
+ls data/avatars
+```
+
+# Face detection and Face recognition
+
+[Face Recognition API](https://github.com/ageitgey/face_recognition)
+
+1. Install python dependency
+```
+pip3 install dlib flask face_recognition pymongo bson
+```
+
+1. Try some face recognition api
+```
+face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
+```
+
+2. Prepare face identity file with encoding generator
+```
+# Filter data/avatars image. Save images with human faces to data/human_face.
+# Generate face_recognition/encodings and face_recognition/index with data/human_face
+python ./face_recognition/encoding_file_generator.py
+```
+
+3. Run our apiserver
+```
+python ./face_recognition/apiserver.py
+```
+
+# Unity
+
+### Warning
+
+1. Some of the contents are priced.
+2. Some of the code in this part are heavily broken lol.
+
+### Use unity
+
+1. Have a working unity and unity account
+
+2. Create a new project
+
+3. Download and import a free face tracker example from unity asset store
+[Face Tracker Example](https://assetstore.unity.com/packages/templates/tutorials/facetracker-example-35284)
+
+4. Download and import another priced asset is required: 
+[OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088)
+NOTE: This is a priced asset.
+
+5. Copy unity scenes and scripts
+```
+unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerExample
+```
+
+6. Test run in unity
+
+### Project Configuration
+
+1. Open unity build for iphone project with xcode. Open another project.
+2. Xcode developer account:
+  - Xcode - Preferences - Accounts: Add and login your 'apple developer ID'. 
+  - The team of your developer account will show up. 
+  - In my case, A personal team show up with my username as team name.
+3. Signing:
+  - Click my-project. The project configure page will show up.
+  - General - Identity: Change your display name and Bundle Identifier. Any reasonable identifier other than the example identifier will work.
+  - General - Signing: Check 'Automatically manage signing'.
+  - Choose your team. A signing certificates will show up.
+  - If you stuck here, check your bundle identifier.
+
+### Build project
+
+1. Attach your device (your iphone). Unlock your iphone.
+2. Click 'Build and Run Current Schema'.
 
 # TODOs
 
@@ -30,73 +145,7 @@ scouter
 - [v] Front-End
   - [v] Unity ios app
   - [v] API portal
-  - [] AR GUI
+  - [ ] AR GUI
 - [v] Readme
 
-# How to use
 
-```
-go build ./cmd/crawler/ && ./crawler --token github-api-token
-```
-
-### Face detection
-
-[Face Detection](https://github.com/ageitgey/face_recognition)
-
-```
-face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
-```
-
-apiserver
-```
-pip3 install dlib flask face_recognition pymongo bson
-```
-
-# Thanks
-
-### Open source packages
-go-github
-
-### Issues
-
-```
-GET https://api.github.com/search/users?order=asc&page=11&per_page=1000&q=location%3ATaiwan&sort=joined: 422 Only the first 1000 search results are available []
-```
-
-# Develop on Mac
-
-Scouter is developed on Mac. As a new developer on ios, I was blocked by lots of envronment setting on unity and xcode.
-Here are things to setup a develop environments.
-
-# Golang
-
-user data fetcher
-
-# Unity
-
-- C# .Net
-- [x] dlibDotNet
-  https://github.com/takuya-takeuchi/DlibDotNet
-
-# Xcode
-
-Version: 9.4.1
-
-### Project Configuration
-
-1. Open unity build for iphone project with xcode. Open another project.
-2. Xcode developer account:
-  - Xcode - Preferences - Accounts: Add and login your 'apple developer ID'. 
-  - The team of your developer account will show up. 
-  - In my case, A personal team show up with my username as team name.
-3. Signing:
-  - Click my-project. The project configure page will show up.
-  - General - Identity: Change your display name and Bundle Identifier. Any reasonable identifier other than the example identifier will work.
-  - General - Signing: Check 'Automatically manage signing'.
-  - Choose your team. A signing certificates will show up.
-  - If you stuck here, check your bundle identifier.
-
-### Build project
-
-1. Attach your device (your iphone). Unlock your iphone.
-2. Click 'Build and Run Current Schema'.
