@@ -1,11 +1,24 @@
 Scouter
 ===
 
-Scouter: A human face detector which show your github contribution statistics.
+Scouter: A human face detector which show your Github contribution statistics.
 
 [![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
 
-# Fetching data from github with github api
+# Brief
+
+1. Fetch following data from Github with Github API
+  - User data
+  - User avatar
+  - Parse HTML to get user contribution statistics
+2. Convert avatar to identity with Face Recognition API. Encoding avatar identity with userId.
+3. Track face and crop face image from camera streaming with OpenCV
+4. Send face image to Flask API server
+  - Convert unknown face image to identity.
+  - Get userId and contribution statistics with identity.
+5. Send user contribution to App and display.
+
+# Fetching data from Github with Github API
 
 1. Have a local running mongoDB
 
@@ -13,7 +26,7 @@ Scouter: A human face detector which show your github contribution statistics.
 docker run -d --name mongo mongo
 ```
 
-2. Generate github access token
+2. Generate Github access token
   - User -> settings -> Developer settings -> Personal access tokens
   - Keep your token safe
 
@@ -21,10 +34,10 @@ docker run -d --name mongo mongo
 
 ```
 # Fetch user with Github Search API
-go build ./cmd/user_fetcher && ./user_fetcher -token <github-api-token>
+go build ./cmd/user_fetcher && ./user_fetcher -token <Github-API-token>
 
 # Fetch user detail information like follwers and repos with Github User API
-go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token <github-api-token>
+go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token <Github-API-token>
 
 # Fetch users' avatar with user.url from data in mongodb
 go build ./cmd/avatar_downloader && ./avatar_downloader
@@ -48,14 +61,14 @@ ls data/avatars
 
 # Face detection and Face recognition
 
-[Face Recognition API](https://github.com/ageitgey/face_recognition)
+[Face Recognition API](https://Github.com/ageitgey/face_recognition)
 
 1. Install python dependency
 ```
 pip3 install dlib flask face_recognition pymongo bson
 ```
 
-1. Try some face recognition api
+1. Try some face recognition API
 ```
 face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
 ```
@@ -67,9 +80,9 @@ face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_kn
 python ./face_recognition/encoding_file_generator.py
 ```
 
-3. Run our apiserver
+3. Run our APIserver
 ```
-python ./face_recognition/apiserver.py
+python ./face_recognition/APIserver.py
 ```
 
 # Unity
@@ -120,11 +133,11 @@ unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerE
 
 # TODOs
 
-- [x] Github api crawler
-  - [x] Add an api to search user in Taiwan 
+- [x] Github API crawler
+  - [x] Add an API to search user in Taiwan 
     - [x] Order by joined asc
-    - [x] Implement a api call with narrowed search condition
-  - [x] Add an api to fetch user Data
+    - [x] Implement a API call with narrowed search condition
+  - [x] Add an API to fetch user Data
     - [x] Get user with userUrl
     - [x] order by most follower
     - [x] order by most commit. Might need query by username.
@@ -134,14 +147,14 @@ unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerE
     - [x] # of follower
     - [x] # of contributions
 - [x] Google Search API Face downloader
-  - [x] Search Avatar with github username and login
+  - [x] Search Avatar with Github username and login
   - [x] Google Custom Search API
     [Google Custom Search API](https://developers.google.com/custom-search/docs/tutorial/introduction)
 - [x] Face Recognizer
   - [x] Face detector
     - [x] Generate face encoding and save to Python Pickle file
     - [x] Face Recognition
-      [Face recognition](https://github.com/ageitgey/face_recognition)
+      [Face recognition](https://Github.com/ageitgey/face_recognition)
 - [x] Front-End
   - [x] Unity ios app
   - [x] API portal
