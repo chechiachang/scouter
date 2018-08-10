@@ -1535,8 +1535,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 282.6, y: 362.7}
-  m_SizeDelta: {x: -834.5, y: -823.8}
+  m_AnchoredPosition: {x: 252, y: 362.7}
+  m_SizeDelta: {x: -503.9, y: -725.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1086896366
 MonoBehaviour:
@@ -1887,7 +1887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAutoResetMode: 1
-  apiserverip: 127.0.0.1
+  apiserverip: 172.20.10.3
   isAutoResetModeToggle: {fileID: 186794852}
   m2Texture: {fileID: 0}
   id: 0

@@ -345,7 +345,27 @@ namespace FaceTrackerExample
                                 #else
                                 Imgproc.rectangle(rgbaMat, new Point(rectsList [l].x, rectsList [l].y), new Point(rectsList [l].x + rectsList [l].width, rectsList [l].y + rectsList [l].height), new Scalar(255, 0, 0, 255), 2);
                                 #endif
-                                
+
+                                Imgproc.line(rgbaMat, 
+                                new Point(rectsList[l].x + rectsList[l].width / 2, rectsList[l].y), 
+                                new Point(rectsList[l].x + rectsList[l].width / 2, rectsList[l].y - rectsList[l].height / 6), 
+                                new Scalar(255, 0, 0, 255), 2);
+
+                                Imgproc.line(rgbaMat, 
+                                new Point(rectsList[l].x + rectsList[l].width / 2, rectsList[l].y + rectsList[l].height), 
+                                new Point(rectsList[l].x + rectsList[l].width / 2, rectsList[l].y + rectsList[l].height * 7 / 6), 
+                                new Scalar(255, 0, 0, 255), 2);
+
+                                Imgproc.line(rgbaMat, 
+                                new Point(rectsList[l].x - rectsList[l].width / 6, rectsList[l].y + rectsList[l].height / 2), 
+                                new Point(rectsList[l].x, rectsList[l].y + rectsList[l].height / 2), 
+                                new Scalar(255, 0, 0, 255), 2);
+
+                                Imgproc.line(rgbaMat, 
+                                new Point(rectsList[l].x + rectsList[l].width * 7 / 6, rectsList[l].y + rectsList[l].height / 2), 
+                                new Point(rectsList[l].x + rectsList[l].width, rectsList[l].y + rectsList[l].height / 2), 
+                                new Scalar(255, 0, 0, 255), 2);
+
                             }
 
                             //grayscale or rgba
