@@ -113,6 +113,10 @@ namespace FaceTrackerExample
         public UnityEngine.UI.Text reposText;
         public UnityEngine.UI.Text gistsText;
 
+        public UnityEngine.UI.Slider contributionSlider;
+        public UnityEngine.UI.Slider followersSlider;
+        public UnityEngine.UI.Slider reposSlider;
+        public UnityEngine.UI.Slider gistsSlider;
         
         /// <summary>
         /// The texture.
@@ -452,6 +456,11 @@ namespace FaceTrackerExample
                         followersText.text = "Followers: " + followers;
                         reposText.text = "Repos: " + publicrepos;
                         gistsText.text = "Gists: " + publicgists;
+
+                        contributionSlider.value = Mathf.Min(contribution, 3000);
+                        followersSlider.value = Mathf.Min(followers, 500);
+                        reposSlider.value = Mathf.Min(publicrepos, 100);
+                        gistsSlider.value = Mathf.Min(publicgists, 100);
                     }
                 }
             }
