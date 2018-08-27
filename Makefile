@@ -62,6 +62,9 @@ add-unity:
 unity:
 	cp -rf unity/Assets/Scouter /Users/Shared/Unity/scouter2/Assets
 
+clean:
+	rm -f avatar_downloader contribution_fetcher user_detail_fetcher user_fetcher 
+
 # Prerequisite
 #
 
