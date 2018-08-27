@@ -22,16 +22,16 @@ Scouter: A human face detector which displays your Github contribution statistic
   - Get userId and contribution statistics with identity.
 - Send user contribution to App and display.
 
-# Fetching data from Github with Github API
-
-### MongoDB
+# MongoDB
 
 1. Have a local running mongoDB using docker
 ```
 docker run -d --name mongo mongo
 ```
 
-2. Restore dump user data
+### (Optional) Import outdated user data from this repository
+
+1. Restore dump user data
 ```
 docker cp data/mongodb/scouter mongo:.
 
@@ -39,11 +39,15 @@ docker exec -it mongo bash
 mongorestore scouter
 ```
 
-3. Check user data in mongodb
+2. Check user data in mongodb
 ```
 docker exec -it mongo mongo scouter --eval "printjson(db.users.findOne())"
 docker exec -it mongo mongo scouter --eval "printjson(db.users.count())"
 ```
+
+##### Skip fetching data step if we choose to use import data
+
+# Fetching data from Github with Github API
 
 ### Generate Github access token
 
