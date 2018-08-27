@@ -1,7 +1,7 @@
 Scouter
 ===
 
-Scouter: A human face detector which show your Github contribution statistics.
+Scouter: A human face detector which displays your Github contribution statistics.
 
 [![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
 
@@ -11,54 +11,68 @@ Scouter: A human face detector which show your Github contribution statistics.
 
 # Brief
 
-1. Fetch following data from Github with Github API
+- Fetch following data from Github with Github API
   - User data
   - User avatar
   - Parse HTML to get user contribution statistics
-2. Convert avatar to identity with Face Recognition API. Encoding avatar identity with userId.
-3. Track face and crop face image from camera streaming with OpenCV
-4. Send face image to Flask API server
+- Convert avatar to identity with Face Recognition API. Encoding avatar identity with userId.
+- Track face and crop face image from camera streaming with OpenCV
+- Send face image to Flask API server
   - Convert unknown face image to identity.
   - Get userId and contribution statistics with identity.
-5. Send user contribution to App and display.
+- Send user contribution to App and display.
 
 # Fetching data from Github with Github API
 
-1. Have a local running mongoDB
+### MongoDB
 
+1. Have a local running mongoDB using docker
 ```
 docker run -d --name mongo mongo
 ```
 
-2. Generate Github access token
-  - User -> settings -> Developer settings -> Personal access tokens
-  - Keep your token safe
-
-3. Run fetchers with token
-
+2. Restore dump user data
 ```
-# Fetch user with Github Search API
+docker cp data/mongodb/scouter mongo:.
+
+docker exec -it mongo bash
+mongorestore scouter
+```
+
+3. Check user data in mongodb
+```
+docker exec -it mongo mongo scouter --eval "printjson(db.users.findOne())"
+docker exec -it mongo mongo scouter --eval "printjson(db.users.count())"
+```
+
+### Generate Github access token
+
+1. Github -> User -> settings -> Developer settings -> Personal access tokens
+2. Keep your token safe.
+
+### Run fetchers with token
+
+1. Fetch user data with Github Search API
+```
 go build ./cmd/user_fetcher && ./user_fetcher -token <Github-API-token>
+```
 
-# Fetch user detail information like follwers and repos with Github User API
+2. Fetch user detail information like follwers and repos with Github User API
+```
 go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token <Github-API-token>
+```
 
-# Fetch users' avatar with user.url from data in mongodb
+3. Fetch users' avatar with user.url from data in mongodb
+```
 go build ./cmd/avatar_downloader && ./avatar_downloader
+```
 
-# Fetch users' contribution statics by parsing html response of user.url from data in mongodb
+4. Fetch users' contribution statics by parsing html response of user.url from data in mongodb
+```
 go build ./cmd/contribution_fetcher && ./contribution_fetcher
 ```
 
-4. Make sure data are good to go
-
-Check user data in mongodb
-```
-docker exec -it mongo scouter
-db.users.findOne()
-```
-
-Check users' avatar
+5. Make sure user avatar are good to go
 ```
 ls data/avatars
 ```
@@ -72,19 +86,19 @@ ls data/avatars
 pip3 install dlib flask face_recognition pymongo bson
 ```
 
-1. Try some face recognition API
+2. Try some face recognition API
 ```
 face_recognition --show-distance true --tolerance 0.54 ./pictures_of_people_i_know/ ./unknown_pictures/
 ```
 
-2. Prepare face identity file with encoding generator
+3. Prepare face identity file with encoding generator
 ```
 # Filter data/avatars image. Save images with human faces to data/human_face.
 # Generate face_recognition/encodings and face_recognition/index with data/human_face
 python ./face_recognition/encoding_file_generator.py
 ```
 
-3. Run our APIserver
+4. Run apiserver to serve face recognition API
 ```
 python ./face_recognition/APIserver.py
 ```
@@ -162,7 +176,7 @@ unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerE
 - [x] Front-End
   - [x] Unity ios app
   - [x] API portal
-  - [ ] AR GUI
+  - [x] AR GUI
 - [x] Readme
 
 
