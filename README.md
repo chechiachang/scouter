@@ -5,6 +5,8 @@ Scouter: A human face detector which show your Github contribution statistics.
 
 [![Build Status](https://travis-ci.org/chechiachang/scouter.svg?branch=master)](https://travis-ci.org/chechiachang/scouter)
 
+![inline](docs/2000.jpeg)
+
 ![inline](docs/demo.png)
 
 # Brief
