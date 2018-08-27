@@ -1,6 +1,7 @@
 DOCKERHUB_USER="chechiachang"
 
 # Build
+#
 
 .PHONY: user_fetcher
 user_fetcher:
@@ -19,9 +20,12 @@ avatar_downloader:
 	go build ./cmd/avatar_downloader
 
 .PHONY: build
-build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader apiserver
+build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader
 
 # Test & Run
+#
+
+PYTHON := $(shell which python)
 
 .PHONY: test
 test:
@@ -29,14 +33,15 @@ test:
 
 .PHONY: apiserver
 apiserver:
-	python ./face_recognition/apiserver.py
+	${PYTHON} ./face_recognition/apiserver.py
 
 # Build & ship
+#
 
 .PHONY: encodings
 encoding:
 	rm -f face_recognition/encodings face_recognition/index
-	python ./face_recognition/encoding_file_generator.py
+	${PYTHON} ./face_recognition/encoding_file_generator.py
 
 .PHONY: base
 base:
@@ -51,5 +56,30 @@ image:
 		--file face_recognition/Dockerfile .
 
 .PHONY: unity
-unity:
+add-unity:
 	cp -rf /Users/Shared/Unity/scouter2/Assets/Scouter unity/Assets/
+
+unity:
+	cp -rf unity/Assets/Scouter /Users/Shared/Unity/scouter2/Assets
+
+# Prerequisite
+#
+
+UNAME := $(shell uname)
+PORT := $(shell which port)
+BREW := $(shell which brew)
+
+ifeq ($(UNAME), Linux)
+
+prerequisite:
+	sudo apt-get update && \
+	sudo apt-get install -y python3 python3-pip
+
+else ifeq ($(UNAME), Darwin)
+
+prerequisite:
+	if [[ "$(PORT)" != "" ]]; then sudo port install coreutils; fi
+	if [[ "$(BREW)" != "" ]]; then brew install coreutils; fi
+	rehash
+
+endif
