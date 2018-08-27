@@ -1,9 +1,12 @@
 user_fetcher
 user_detail_fetcher
 contribution_fetcher
-apiserver
 avatar_downloader
-data/*
+
+data/avatars/*
+data/human_face/*
+data/unknown/*
+
 logs/*
 
 # python
