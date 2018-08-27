@@ -9,6 +9,8 @@ Scouter: A human face detector which displays your Github contribution statistic
 
 ![inline](docs/demo.png)
 
+[Presentation On COSCUP 2018](https://github.com/chechiachang/my-speeches/blob/master/fr-ar-open-source-power-detector/presentation.md)
+
 # Brief
 
 - Fetch following data from Github with Github API
