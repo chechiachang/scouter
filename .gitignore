@@ -1,8 +1,3 @@
-user_fetcher
-user_detail_fetcher
-contribution_fetcher
-avatar_downloader
-
 data/avatars/*
 data/human_face/*
 data/unknown/*
