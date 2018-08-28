@@ -12,9 +12,9 @@ collection = db.users
 # Load encodings and index
 known_faces = []
 name_index = []
-with open('face_recognition/encodings', 'rb') as fp:
+with open('data/encodings', 'rb') as fp:
     known_faces = pickle.load(fp)
-with open('face_recognition/index', 'rb') as fp:
+with open('data/index', 'rb') as fp:
     name_index = pickle.load(fp)
 
 @app.route("/", methods=['GET'])
