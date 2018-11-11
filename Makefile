@@ -3,29 +3,30 @@ DOCKERHUB_USER="chechiachang"
 # Build
 #
 
-.PHONY: user_fetcher
-user_fetcher:
-	go build ./cmd/user_fetcher
-	
-.PHONY: user_detail_fetcher
-user_detail_fetcher:
-	go build ./cmd/user_detail_fetcher
-
-.PHONY: contribution_fetcher
-contribution_fetcher:
-	go build ./cmd/contribution_fetcher
-
-.PHONY: avatar_downloader
-avatar_downloader:
-	go build ./cmd/avatar_downloader
+get:
+	go get -v ./...
 
 .PHONY: build
-build: user_fetcher user_detail_fetcher contribution_fetcher avatar_downloader
+build: get
+	go build ./...
+
+db:
+	docker run -d --name mongo mongo
+
+migrate:
+	docker cp data/mongodb/scouter mongo:.
+	docker exec -it mongo bash -c "mongorestore -d scouter scouter"
+
+run: db
+	echo "run"
+
 
 # Test & Run
 #
 
-PYTHON := $(shell which python)
+PYTHON = $(shell which python)
+PIPENV = .venv
+PYTHON_VERSION = 3.6.7
 
 .PHONY: test
 test:
@@ -33,7 +34,9 @@ test:
 
 .PHONY: apiserver
 apiserver:
-	${PYTHON} ./face_recognition/apiserver.py
+	env PIPENV_VENV_IN_PROJECT=$(PIPENV) pipenv --python $(PYTHON_VERSION)
+	pipenv install
+	pipenv run python ./face_recognition/apiserver.py
 
 # Build & ship
 #
