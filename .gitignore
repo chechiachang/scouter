@@ -6,6 +6,8 @@ logs/*
 
 # python
 __pycache__/
+.venv
+Pipfile.lock
 
 # mac
 **/.DS_Store
