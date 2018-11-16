@@ -9,16 +9,16 @@ Scouter: A human face detector which displays your Github contribution statistic
 
 ![inline](docs/demo.png)
 
-# Check My Presentation on COSCUP 2018
+# Check Presentation Strem on COSCUP 2018
 
 [Presentation On COSCUP 2018](https://github.com/chechiachang/my-speeches/blob/master/fr-ar-open-source-power-detector/presentation.md)
 
 # Brief
 
-- Fetch following data from Github with Github API
-  - User data
-  - User avatar
-  - Parse HTML to get user contribution statistics
+- Fetch data with Github API
+  - Github user data
+  - Github user avatar
+  - Parse Github contribution HTML to get user contribution statistics
 - Convert avatar to identity with Face Recognition API. Encoding avatar identity with userId.
 - Track face and crop face image from camera streaming with OpenCV
 - Send face image to Flask API server
@@ -30,28 +30,21 @@ Scouter: A human face detector which displays your Github contribution statistic
 
 1. Have a local running mongoDB using docker
 ```
-docker run -d --name mongo mongo
+make db
 ```
 
-### (Optional) Import outdated user data from this repository
-
-1. Restore dump user data
+2. (Optional) Import dump user data
 ```
-docker cp data/mongodb/scouter mongo:.
+make migrate
 
-docker exec -it mongo bash
-mongorestore scouter
-```
-
-2. Check user data in mongodb
-```
+# Check user data in mongodb
 docker exec -it mongo mongo scouter --eval "printjson(db.users.findOne())"
 docker exec -it mongo mongo scouter --eval "printjson(db.users.count())"
 ```
 
-##### Skip fetching data step if we choose to use import data
+Skip 'Fetching data with Github API' if using dump data
 
-# Fetching data from Github with Github API
+# (Optional) Fetching data with Github API
 
 ### Generate Github access token
 
@@ -59,6 +52,8 @@ docker exec -it mongo mongo scouter --eval "printjson(db.users.count())"
 2. Keep your token safe.
 
 ### Run fetchers with token
+
+0. Install go
 
 1. Fetch user data with Github Search API
 ```
@@ -89,6 +84,12 @@ ls data/avatars
 
 [Face Recognition API](https://Github.com/ageitgey/face_recognition)
 
+0. Prepare a python virtual env
+```
+python3 -m venv .venv
+source ./.venv/bin/activate
+```
+
 1. Install python dependency
 ```
 pip3 install dlib flask face_recognition pymongo bson
@@ -113,14 +114,7 @@ python ./face_recognition/APIserver.py
 
 # Unity
 
-### Warning
-
-1. Some of the contents are priced.
-2. Some of the code in this part are heavily broken lol.
-
-### Use unity
-
-1. Have a working unity and unity account
+1. Download latest Unity with iOS Build tools
 
 2. Create a new project
 
@@ -133,10 +127,23 @@ NOTE: This is a priced asset.
 
 5. Copy unity scenes and scripts
 ```
-unity/Assets/Scouter/* to /Users/Shared/Unity/<your-project>/Assets/FaceTrackerExample
+cp -r unity/Assets/Scouter/* <unity-workspace>/<your-project>/Assets/FaceTrackerExample
 ```
 
-6. Test run in unity
+6. Open Unity and setup.
+File -> Build Settings -> Player Settings
+```
+Mac App Store Options -> Bundle Identifier: com.chechiachang.scouter
+Configuration -> Scriptin Runtime Version: .NET 4.x Equivalent -> restart
+```
+
+7. Open Scenes/WebCamTextureFaceTrackerExample
+```
+Inspector -> Web Cam Texture Face Tracker Example -> Apiserverip: 
+- 127.0.0.1 on your localhost mac
+- 172.20.10.3 with personal hotspot of Iphone
+```
+Run
 
 ### Project Configuration
 
