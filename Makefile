@@ -11,22 +11,16 @@ build: get
 	go build ./...
 
 db:
-	docker run -d --name mongo mongo
+	docker run -d --name mongo -p 27017:27017 mongo 
 
 migrate:
 	docker cp data/mongodb/scouter mongo:.
 	docker exec -it mongo bash -c "mongorestore -d scouter scouter"
 
-run: db
-	echo "run"
-
-
 # Test & Run
 #
 
 PYTHON = $(shell which python)
-PIPENV = .venv
-PYTHON_VERSION = 3.6.7
 
 .PHONY: test
 test:
@@ -34,9 +28,7 @@ test:
 
 .PHONY: apiserver
 apiserver:
-	env PIPENV_VENV_IN_PROJECT=$(PIPENV) pipenv --python $(PYTHON_VERSION)
-	pipenv install
-	pipenv run python ./face_recognition/apiserver.py
+	${PYTHON} ./face_recognition/apiserver.py
 
 # Build & ship
 #
@@ -60,10 +52,10 @@ image:
 
 .PHONY: unity
 add-unity:
-	cp -rf /Users/Shared/Unity/scouter2/Assets/Scouter unity/Assets/
+	cp -rf /Users/Shared/Unity/scouter/Assets/Scouter unity/Assets/
 
 unity:
-	cp -rf unity/Assets/Scouter /Users/Shared/Unity/scouter2/Assets
+	cp -rf unity/Assets/Scouter /Users/Shared/Unity/scouter/Assets
 
 clean:
 	rm -f avatar_downloader contribution_fetcher user_detail_fetcher user_fetcher 
