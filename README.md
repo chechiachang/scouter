@@ -57,12 +57,13 @@ Skip 'Fetching data with Github API' if using dump data
 
 1. Fetch user data with Github Search API
 ```
-go build ./cmd/user_fetcher && ./user_fetcher -token <Github-API-token>
+GITHUB_ACCESS_TOKEN=
+go build ./cmd/user_fetcher && ./user_fetcher -token ${GITHUB_ACCESS_TOKEN}
 ```
 
 2. Fetch user detail information like follwers and repos with Github User API
 ```
-go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token <Github-API-token>
+go build ./cmd/user_detail_fetcher && ./user_detail_fetcher -token ${GITHUB_ACCESS_TOKEN}
 ```
 
 3. Fetch users' avatar with user.url from data in mongodb
@@ -109,7 +110,12 @@ python ./face_recognition/encoding_file_generator.py
 
 4. Run apiserver to serve face recognition API
 ```
-python ./face_recognition/APIserver.py
+python ./face_recognition/apiserver.py
+```
+
+5. Send imageBytes to api server
+```
+PostRequest("http://"+apiserverip+":5000/face_detection", imageBytes)
 ```
 
 # Unity

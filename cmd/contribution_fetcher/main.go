@@ -75,8 +75,8 @@ func sumContribution(user scouter.User, contributionLine, contributionNumber *re
 	wg := sync.WaitGroup{}
 	contribution := make(chan int, 11)
 
-	// Count contribution 2008..2018
-	for year := 2008; year < 2019; year++ {
+	// Count contribution 2008..2019
+	for year := 2008; year < 2020; year++ {
 
 		go func() {
 			wg.Add(1)
