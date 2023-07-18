@@ -15,6 +15,8 @@ Scouter: A human face detector which displays your Github contribution statistic
 
 # Check Presentation Stream on COSCUP 2018
 
+[![Check this live demo](docs/coscup-2018.png)](https://www.youtube.com/live/4SWO4x7bNjo?feature=share&t=23536)
+
 [Presentation On COSCUP 2018](https://github.com/chechiachang/my-speeches/blob/master/fr-ar-open-source-power-detector/presentation.md)
 
 # Brief
